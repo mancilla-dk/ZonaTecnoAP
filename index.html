@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta content='width=device-width, initial-scale=1' name='viewport'/>
+    <title>ZonaTecno - Apps Premium</title>
+    
+    <link href='style.css' rel='stylesheet'/>
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css' rel='stylesheet'/>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+    /* --- VARIABLES GLOBALES --- */
+    :root {
+        --bg-color: #050505; 
+        --text-color: #ffffff;
+        --neon-blue: #00e0ff; 
+        --neon-green: #00ffaa; 
+        --neon-pink: #ff1493;
+        --neon-yellow: #fff300; 
+        --neon-purple: #bb00ff; 
+        --neon-red: #ff3333;
+        --neon-orange: #ffaa00; 
+        --neon-gemini: #4aaaff;
+        --neon-white-grey: rgba(255, 255, 255, 0.5);
+        --card-bg: rgba(30, 30, 30, 0.7); 
+        --glass-bg: rgba(20, 20, 20, 0.95);
+        
+        /* Variables Dinámicas para el nuevo diseño (Editables desde JS) */
+        --dyn-neon-1: #FF00FF; 
+        --dyn-neon-2: #8BC34A;
+    }
+
+    /* --- RESET Y BASE --- */
+    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+    
+    body { 
+        background-color: var(--bg-color); 
+        color: var(--text-color); 
+        font-family: 'Roboto', 'Segoe UI', sans-serif; 
+        overflow-x: hidden; 
+        min-height: 100vh; 
+    }
+    
+    /* Fondo Base + Gradiente (Siempre visible) */
+    body::before { 
+        content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -3; 
+        background: linear-gradient(to bottom, rgba(5,5,5,0.8), rgba(5,5,5,1)), url('https://i.pinimg.com/1200x/63/ec/9d/63ec9d8f28be6f11592f1dec31824f6d.jpg'); 
+        background-size: cover; background-position: center; 
+    }
+    
+    #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none; }
+
+    /* --- HEADER SUPERIOR --- */
+    .playstore-header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background: var(--glass-bg); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 15px 5px 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+    .search-bar-container { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 10px; }
+    .search-input-fake { flex-grow: 1; background: rgba(255,255,255,0.1); height: 40px; border-radius: 25px; display: flex; align-items: center; padding: 0 20px; box-shadow: 0 0 10px rgba(0,0,0,0.2); border:none; }
+    .search-input-fake input { background: transparent; border: none; color: white; width: 100%; font-size: 13px; outline: none; }
+    .search-icon { margin-right: 10px; color: var(--neon-blue); font-size: 14px; }
+    .profile-icon { width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple)); display: flex; justify-content: center; align-items: center; color: white; font-size: 18px; border: 2px solid #fff; cursor: pointer; transition: 0.3s; }
+    .profile-icon:active { transform: scale(0.9); }
+    .menu-icon { font-size: 20px; color: #fff; cursor: pointer; }
+    
+    /* FILTROS CHIPS */
+    .filter-chips { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; white-space: nowrap; }
+       .chip { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(255,255,255,0.05); font-size: 12px; color: var(--neon-blue); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; }
+    .chip a { color: inherit; text-decoration: none; }
+    .chip.active { background: var(--neon-green); color: #000; font-weight: bold; border-color: var(--neon-green); }
+
+    .chip-counter { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border: 1px solid var(--neon-blue); border-radius: 30px; color: var(--neon-blue); font-size: 11px; font-weight: bold; text-shadow: 0 0 5px var(--neon-blue); background: rgba(0, 224, 255, 0.1); white-space: nowrap; margin-left: -2px; }
+
+    /* --- MENU LATERAL --- */
+    .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 2000; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(5px); }
+    .menu-overlay.active { opacity: 1; visibility: visible; }
+    .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #0a0a0a; z-index: 2001; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-right: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; box-shadow: none; }
+    .side-menu.active { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
+    .menu-header { padding: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; background: linear-gradient(45deg, #00111a, #0a0a0a); }
+    .menu-header h3 { color: var(--neon-blue); font-size: 16px; letter-spacing: 2px; }
+    .menu-header i { color: #fff; font-size: 20px; cursor: pointer; }
+    .menu-links { padding: 20px; overflow-y: auto; }
+    .menu-label { font-size: 11px; color: #666; text-transform: uppercase; margin-bottom: 15px; font-weight: bold; }
+    .menu-links a { display: flex; align-items: center; padding: 12px 0; color: #ddd; text-decoration: none; font-size: 14px; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.02); }
+    .menu-links a i { width: 30px; color: var(--neon-blue); font-size: 16px; text-align: center; }
+    .menu-links .divider { height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0; }
+
+    /* --- CONTENIDO PRINCIPAL --- */
+    .main-content { position: relative; z-index: 10; width: 94%; max-width: 94%; margin: 0 auto; text-align: center; }
+    .spacer-top { height: 130px; }
+    .spacer-bottom { height: 80px; }
+    
+    /* GESTIÓN DE VISTAS (SPA) */
+    .view-section { display: none; animation: fadeIn 0.4s ease; }
+    .view-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .hero-content-visual h1 { font-size: 42px; margin-bottom: 5px; text-transform: uppercase; font-weight: 900; color: #fff; text-shadow: 0 0 20px rgba(0, 224, 255, 0.4); letter-spacing: -1px; }
+    
+    /* BOTON VOLVER ARRIBA */
+    #back-to-top {
+        position: fixed; bottom: 80px; right: 20px; width: 45px; height: 45px;
+        background: var(--neon-blue); color: #000; border-radius: 50%;
+        display: flex; justify-content: center; align-items: center;
+        font-size: 20px; box-shadow: 0 0 15px rgba(0, 224, 255, 0.6);
+        z-index: 999; cursor: pointer; opacity: 0; pointer-events: none;
+        transition: all 0.3s ease; transform: translateY(20px);
+    }
+    #back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+    /* BANNER Y VIDEO (VISTA HOME) */
+    .featured-banner { width: 100%; height: auto; min-height: 100px; border-radius: 20px; background: rgba(30, 30, 30, 0.4); border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; margin-bottom: 40px; display: flex; align-items: center; justify-content: center; padding: 0; text-align: center; box-shadow: 0 0 30px rgba(0, 224, 255, 0.1); }
+    .video-section h3 { margin-bottom: 15px; color: var(--neon-yellow); font-size: 14px; letter-spacing: 1px; text-align: left; border-left: 3px solid var(--neon-red); padding-left: 10px; font-weight: bold; text-transform: uppercase; }
+    .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background-color: #000; border-radius: 12px; border: 1px solid var(--neon-white-grey); box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); margin-bottom: 40px; }
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+    /* GRID CATEGORIAS */
+    .store-grid-title { font-size: 18px; margin-bottom: 15px; color: #fff; text-align: left; display: flex; align-items: center; justify-content: space-between; }
+    .store-grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; margin-bottom: 20px; }
+    @media (min-width: 600px) { .store-grid { grid-template-columns: repeat(2, 1fr); } }
+    .store-card { display: flex; align-items: center; background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 12px; padding: 12px; text-decoration: none; transition: 0.3s; border: 1px solid rgba(255, 255, 255, 0.05); }
+    .card-icon { width: 45px; height: 45px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 20px; margin-right: 12px; flex-shrink: 0; background: rgba(0, 0, 0, 0.3); }
+    .card-details { flex-grow: 1; text-align: left; }
+    .card-details h3 { font-size: 14px; font-weight: 700; color: #fff; margin: 0 0 3px 0; }
+    .card-details p { font-size: 11px; color: #aaa; margin: 0; }
+    .card-action { background: rgba(255, 255, 255, 0.1); padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; color: #fff; transition: 0.3s; }
+    
+    /* COLORES NEON */
+    .neon-blue .card-icon { color: var(--neon-blue); border: 1px solid rgba(0,224,255,0.3); } .neon-blue:hover .card-action { background: var(--neon-blue); color: #000; }
+    .neon-green .card-icon { color: var(--neon-green); border: 1px solid rgba(0,255,170,0.3); } .neon-green:hover .card-action { background: var(--neon-green); color: #000; }
+    .neon-pink .card-icon { color: var(--neon-pink); border: 1px solid rgba(255,20,147,0.3); } .neon-pink:hover .card-action { background: var(--neon-pink); color: #000; }
+    .neon-yellow .card-icon { color: var(--neon-yellow); border: 1px solid rgba(255,243,0,0.3); } .neon-yellow:hover .card-action { background: var(--neon-yellow); color: #000; }
+    .neon-orange .card-icon { color: var(--neon-orange); border: 1px solid rgba(255,170,0,0.3); } .neon-orange:hover .card-action { background: var(--neon-orange); color: #000; }
+    .neon-purple .card-icon { color: var(--neon-purple); border: 1px solid rgba(187,0,255,0.3); } .neon-purple:hover .card-action { background: var(--neon-purple); color: #000; }
+    .neon-red .card-icon { color: var(--neon-red); border: 1px solid rgba(255,51,51,0.3); } .neon-red:hover .card-action { background: var(--neon-red); color: #000; }
+    .neon-gemini .card-icon { color: var(--neon-gemini); border: 1px solid rgba(255,255,255,0.3); } .neon-gemini:hover .card-action { background: var(--neon-gemini); color: #000; }
+
+    /* ESTILOS FAQ (BASE) */
+    .faq-section { margin-top: 40px; margin-bottom: 20px; text-align: left; background: rgba(255, 255, 255, 0.03); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.05); }
+    .faq-title { font-size: 16px; color: var(--neon-purple); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:15px; }
+    .faq-category { color: var(--neon-blue); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 10px; font-weight: bold; }
+    .faq-item { margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    details summary { cursor: pointer; font-size: 13px; font-weight: bold; padding: 12px 0; color: #eee; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    details summary::after { content: '+'; font-size: 16px; color: var(--neon-blue); }
+    details[open] summary::after { content: '-'; color: var(--neon-pink); }
+    details p { font-size: 13px; color: #bbb; padding-bottom: 15px; line-height: 1.5; padding-left: 5px; }
+    
+    .report-btn-container { margin-top: 30px; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+    .btn-report { background: var(--neon-red); color: #fff; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-block; box-shadow: 0 0 15px rgba(255,51,51,0.4); transition: 0.3s; }
+
+    /* NAVBAR INFERIOR */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: var(--glass-bg); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #777; text-decoration: none; font-size: 9px; gap: 4px; width: 100%; height: 100%; transition: 0.3s; min-width: 50px; }
+    .nav-item i { font-size: 20px; transition: 0.3s; }
+    .nav-item.active { color: var(--neon-green); }
+    .nav-item.active i { transform: translateY(-3px); text-shadow: 0 0 10px var(--neon-green); }
+
+    /* LISTA DE APPS (HOME/BUSQUEDA) */
+    .custom-post { display: flex; align-items: center; background: var(--card-bg); margin-bottom: 15px; padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); position: relative; transition: 0.2s; cursor: pointer; }
+    .custom-post:active { transform: scale(0.98); background: rgba(40,40,40,0.8); }
+    .post-thumb { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; margin-right: 15px; background: #222; flex-shrink: 0; }
+    .post-info { flex-grow: 1; text-align: left; overflow: hidden; }
+    .post-title { font-size: 15px !important; font-weight: bold !important; color: #fff !important; margin: 0 0 6px 0 !important; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block !important; }
+    .post-tags-inline { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+    .post-tags-inline span { font-size: 9px; color: var(--neon-blue); background: rgba(0, 224, 255, 0.1); border: 1px solid rgba(0, 224, 255, 0.15); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+
+    /* --- ADMIN MODAL (ACTUALIZADO) --- */
+    .admin-modal {
+        display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 95%; max-width: 450px; background: #111; border: 1px solid var(--neon-blue);
+        border-radius: 15px; z-index: 3000; padding: 20px; box-shadow: 0 0 50px rgba(0,0,0,0.9);
+        max-height: 90vh; overflow-y: auto;
+    }
+    .admin-modal h3 { color: var(--neon-green); margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+    .admin-form input, .admin-form textarea, .admin-form select {
+        width: 100%; padding: 10px; margin-bottom: 10px; background: #222; border: 1px solid #444;
+        color: #fff; border-radius: 5px; font-size: 13px; font-family: inherit;
+    }
+    .admin-group-label { font-size: 11px; color: var(--neon-yellow); margin: 15px 0 5px 0; border-bottom: 1px solid #333; padding-bottom: 3px; font-weight: bold; letter-spacing: 1px; display: block; }
+    .admin-btns { display: flex; gap: 10px; margin-top: 10px; }
+    .btn-save { flex: 1; background: var(--neon-blue); border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+    .btn-cancel { flex: 1; background: #333; color: #fff; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+    .delete-btn { color: var(--neon-red); font-size: 16px; margin-left: 10px; cursor: pointer; position: relative; z-index:100; }
+    .edit-btn { color: var(--neon-yellow); font-size: 16px; margin-left: auto; cursor: pointer; position: relative; z-index:100; }
+       .loading-msg { color: #888; margin: 20px 0; font-size: 14px; animation: blink 1s infinite; text-align: center; display: none; }
+    
+    /* ESQUELETO DE CARGA */
+    .skeleton-box { display: flex; align-items: center; background: var(--card-bg); margin-bottom: 15px; padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+    .skeleton-thumb { width: 60px; height: 60px; border-radius: 12px; background: rgba(255,255,255,0.1); margin-right: 15px; flex-shrink: 0; animation: pulse 1.5s infinite ease-in-out; }
+    .skeleton-line { height: 12px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 8px; animation: pulse 1.5s infinite ease-in-out; }
+    .skeleton-line.w-70 { width: 70%; } .skeleton-line.w-40 { width: 40%; }
+    @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
+
+
+    /* ESTILOS COMUNES */
+    .contact-form-container { margin-top: 30px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
+    .contact-title { color: var(--neon-green); font-size: 14px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
+    .form-group { margin-bottom: 10px; text-align: left; }
+    .form-group label { display: block; font-size: 10px; color: #aaa; margin-bottom: 4px; }
+    .form-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px; border-radius: 5px; font-size: 13px; font-family: inherit; }
+    .form-input:focus { border-color: var(--neon-blue); background: rgba(255,255,255,0.1); }
+    .btn-send-form { width: 100%; background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple)); color: white; border: none; padding: 12px; border-radius: 25px; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 5px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+    .evangelio-message { color: var(--neon-purple); font-size: 14px; letter-spacing: 1px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; min-height: 20px; text-shadow: 0 0 8px var(--neon-purple); }
+    .subtitle { color: #888; font-size: 12px; letter-spacing: 2px; margin-bottom: 30px; text-transform: uppercase; }
+    .cursor { color: var(--neon-blue); animation: blink 1s infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* --- ESTILOS VISTA DETALLE (NUEVO DISEÑO INTEGRADO) --- */
+    .blogger-wrapper-final {
+        all: initial; /* Resetea estilos para esta sección */
+        box-sizing: border-box;
+        font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        color: #fff; font-weight: 500; text-transform: uppercase; line-height: 1.2;
+        width: 100%; display: block; position: relative;
+        /* Variables dinámicas conectadas */
+        --color-text-secondary: #ccc;
+        --color-background-dark: transparent; /* IMPORTANTE: Fondo transparente */
+        --color-card-dark: rgba(15, 18, 31, 0.8);
+        --color-neon-cyan: var(--dyn-neon-1); 
+        --color-neon-lime: var(--dyn-neon-2);
+        --color-whatsapp: #25D366;
+        --color-report-input-bg: #1A1E2F;
+    }
+    .blogger-wrapper-final * { box-sizing: border-box; outline: none; }
+
+    /* Estructura Blogger */
+    .blogger-wrapper-final .content-grid {
+        position: relative; z-index: 10; width: 100%; max-width: 1100px; margin: 0 auto; padding: 20px 10px; display: flex; flex-direction: column; gap: 20px;
+    }
+    @media (min-width: 992px) {
+        .blogger-wrapper-final .content-grid { display: grid; grid-template-columns: 360px 1fr; align-items: start; gap: 30px; }
+        .blogger-wrapper-final .left-column { position: sticky; top: 20px; height: fit-content; }
+    }
+    
+    .blogger-wrapper-final a { text-decoration: none; color: inherit; cursor: pointer; }
+    .blogger-wrapper-final h1, .blogger-wrapper-final h2, .blogger-wrapper-final h3, .blogger-wrapper-final h4 { margin-top: 0; text-align: center; color: #fff; }
+
+    .blogger-wrapper-final .top-headers {
+        display: flex; justify-content: space-between; font-size: 1.1em; font-weight: 700; letter-spacing: 1px;
+        margin-bottom: 25px; padding-top: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;
+    }
+    .blogger-wrapper-final .product-header-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+    .blogger-wrapper-final .product-image-container {
+        width: 90px; height: 90px; background-color: #000; border-radius: 15px; overflow: hidden;
+        flex-shrink: 0; display: flex; justify-content: center; align-items: center;
+        border: 2px solid var(--color-neon-cyan); box-shadow: 0 0 10px var(--color-neon-cyan);
+    }
+    .blogger-wrapper-final .product-image-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    
+    .blogger-wrapper-final .product-title-block { text-align: left; flex-grow: 1; }
+    .blogger-wrapper-final .product-title-block h1 { font-size: 1.8em; font-weight: 900; margin: 0; line-height: 1.1; text-align: left; }
+    .blogger-wrapper-final .product-version { display: block; color: var(--color-neon-cyan); font-size: 1em; font-weight: 700; margin-top: 5px; }
+    
+    .blogger-wrapper-final .product-info-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; text-align: left; }
+    .blogger-wrapper-final .info-item {
+        display: flex; flex-direction: column; background-color: rgba(15, 18, 31, 0.7); padding: 8px;
+        border-radius: 8px; border: 1px solid var(--color-neon-cyan); box-shadow: 0 0 5px var(--color-neon-cyan);
+    }
+    .blogger-wrapper-final .info-item.mod-info-full-width { grid-column: 1 / span 2; }
+    .blogger-wrapper-final .info-item.mod-info-full-width .mod-info-value { color: var(--color-neon-lime); }
+    .blogger-wrapper-final .info-label { font-size: 0.7em; color: var(--color-text-secondary); margin-bottom: 2px; }
+    .blogger-wrapper-final .info-value { font-size: 0.9em; font-weight: 700; color: #fff; }
+
+    .blogger-wrapper-final p {
+        font-size: 0.95em; font-weight: 500; color: var(--color-text-secondary); line-height: 1.4;
+        margin-bottom: 15px; text-align: justify; text-transform: none; letter-spacing: -0.2px;
+    }
+    .blogger-wrapper-final .text-neon-lime { color: var(--color-neon-lime); font-weight: 700; }
+    .blogger-wrapper-final .text-neon-main { color: var(--color-neon-cyan); font-weight: 700; }
+    
+    .blogger-wrapper-final .section-title-divider { text-align: center; margin-top: 25px; margin-bottom: 15px; }
+    .blogger-wrapper-final .section-title-divider h3 {
+        font-size: 1.3em; font-weight: 700; margin: 0 auto; padding-bottom: 5px;
+        border-bottom: 3px solid var(--color-neon-cyan); width: fit-content;
+    }
+    
+    /* Carrusel 3D */
+    .blogger-wrapper-final .preview-images-carousel { position: relative; height: 380px; margin-bottom: 30px; overflow: hidden; }
+    .blogger-wrapper-final .screenshot-item {
+        position: absolute; top: 50%; left: 50%; width: 180px; height: 320px;
+        background-color: var(--color-card-dark); border-radius: 15px; overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.8); transition: 0.5s;
+    }
+    .blogger-wrapper-final .screenshot-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .blogger-wrapper-final .screenshot-item.center { z-index: 10; transform: translate(-50%, -50%) scale(1.1); border: 3px solid var(--color-neon-cyan); box-shadow: 0 0 20px var(--color-neon-cyan); }
+    .blogger-wrapper-final .screenshot-item.left { z-index: 5; opacity: 0.5; filter: blur(2px); transform: translate3d(calc(-50% - 140px), -50%, 0) scale(0.85); }
+    .blogger-wrapper-final .screenshot-item.right { z-index: 5; opacity: 0.5; filter: blur(2px); transform: translate3d(calc(-50% + 140px), -50%, 0) scale(0.85); }
+    .blogger-wrapper-final .screenshot-item.hidden-left { opacity: 0; transform: translate3d(calc(-50% - 300px), -50%, 0) scale(0.6); }
+    .blogger-wrapper-final .screenshot-item.hidden-right { opacity: 0; transform: translate3d(calc(-50% + 300px), -50%, 0) scale(0.6); }
+
+    .blogger-wrapper-final .video-container {
+        position: relative; width: 100%; padding-bottom: 56.25%; height: 0; margin-top: 10px; margin-bottom: 20px;
+        border: 3px solid var(--color-neon-cyan); box-shadow: 0 0 15px var(--color-neon-cyan); border-radius: 8px; overflow: hidden;
+    }
+    .blogger-wrapper-final .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+    /* Acordeones Detalle */
+    .blogger-wrapper-final .faq-toggle-header, .blogger-wrapper-final .other-versions-toggle {
+        cursor: pointer; padding: 10px 0; font-size: 1.1em; font-weight: 700;
+        border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;
+        color: var(--color-neon-cyan); text-transform: none;
+    }
+    .blogger-wrapper-final .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+    .blogger-wrapper-final .accordion-content.is-main-open { max-height: 2000px; padding: 15px 0; }
+    .blogger-wrapper-final .faq-item, .blogger-wrapper-final .version-item { margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); }
+    .blogger-wrapper-final .faq-question, .blogger-wrapper-final .version-name {
+        font-weight: 700; padding: 8px 0; display: flex; justify-content: space-between; cursor: pointer; color: #fff; font-size: 0.9em; text-transform: uppercase;
+    }
+    .blogger-wrapper-final .nested-content {
+        max-height: 0; overflow: hidden; transition: max-height 0.3s ease; font-size: 0.9em;
+        color: var(--color-text-secondary); text-transform: none; text-align: justify;
+    }
+    .blogger-wrapper-final .nested-content.is-open { max-height: 500px; padding: 10px 0; }
+
+    /* Botones Descarga */
+    .blogger-wrapper-final .download-box {
+        margin: 15px 0 30px 0; padding: 15px; border-radius: 12px; background-color: var(--color-card-dark);
+        border: 2px solid var(--color-neon-cyan); box-shadow: 0 0 15px var(--color-neon-cyan);
+    }
+    .blogger-wrapper-final .download-button {
+        display: block; text-align: center; padding: 15px 10px; border-radius: 8px; font-size: 1.1em;
+        font-weight: 900; color: #000; margin-bottom: 15px; transition: transform 0.2s;
+    }
+    .blogger-wrapper-final .download-button:last-child { margin-bottom: 0; }
+    .blogger-wrapper-final .download-button:hover { transform: translateY(-2px); }
+    .blogger-wrapper-final .download-button.option-1 { background-color: var(--color-neon-cyan); box-shadow: 0 0 10px var(--color-neon-cyan); }
+    .blogger-wrapper-final .download-button.option-2 { background-color: var(--color-neon-lime); box-shadow: 0 0 10px var(--color-neon-lime); }
+    
+    .blogger-wrapper-final .app-button.website-explore {
+        display: flex; justify-content: center; align-items: center; padding: 15px; border-radius: 8px; font-weight: 900;
+        background-color: rgba(0,0,0,0.4); color: var(--color-neon-lime); border: 1px solid var(--color-neon-lime);
+        box-shadow: 0 0 10px var(--color-neon-lime); width: 100%;
+    }
+    .blogger-wrapper-final .social-button.whatsapp {
+        display: block; padding: 15px; border-radius: 8px; font-weight: 900; text-align: center;
+        background-color: var(--color-whatsapp); color: #000; box-shadow: 0 0 15px var(--color-whatsapp);
+    }
+
+    /* Formulario en Detalle */
+    .blogger-wrapper-final .comment-form-container { padding-top: 30px; background: transparent; }
+    .blogger-wrapper-final .dark-form { display: flex; flex-direction: column; gap: 15px; }
+    .blogger-wrapper-final .comment-label { display: block; margin-bottom: 5px; text-align: left; font-size: 0.9em; color: #fff; }
+    .blogger-wrapper-final input[type="text"], .blogger-wrapper-final input[type="email"], .blogger-wrapper-final textarea {
+        width: 100%; padding: 15px; background-color: var(--color-report-input-bg); border: none; border-radius: 5px; color: #fff; font-family: inherit; text-transform: none;
+    }
+    .blogger-wrapper-final textarea { min-height: 150px; border: 1px solid var(--color-neon-cyan); box-shadow: 0 0 5px var(--color-neon-cyan); }
+    .blogger-wrapper-final .name-button-row { display: flex; gap: 10px; align-items: flex-end; }
+    .blogger-wrapper-final .input-group { flex-grow: 1; }
+    .blogger-wrapper-final .submit-button.problem-submit-button {
+        width: 150px !important; height: 50px !important; background-color: #00FFFF !important; color: #000 !important;
+        text-transform: uppercase !important; font-weight: 900; border: none; cursor: pointer; padding: 0; flex-shrink: 0; transition: box-shadow 0.3s;
+    }
+    .blogger-wrapper-final .submit-button.problem-submit-button:hover { box-shadow: 0 0 20px cyan, 0 0 40px cyan !important; }
+    .blogger-wrapper-final .required-star { color: var(--color-neon-cyan); }
+    </style>
+</head>
+<body class="home-view">
+
+    <div id='particles-js'></div>
+    
+    <div id='back-to-top' onclick='window.scrollTo({top: 0, behavior: "smooth"});'>
+        <i class='fa-solid fa-arrow-up'></i>
+    </div>
+
+      <div id="admin-modal" class="admin-modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
+            <h3 style="margin:0; border:none; padding:0;"><i class="fa-solid fa-user-gear"></i> PANEL DE CONTROL</h3>
+            <i class="fa-solid fa-xmark" style="color:#fff; font-size:20px; cursor:pointer;" onclick="closeAdmin()"></i>
+        </div>
+        
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <button onclick="document.getElementById('admin-tab-apps').style.display='block'; document.getElementById('admin-tab-site').style.display='none';" style="flex:1; padding:8px; background:var(--neon-blue); border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Apps/Apks</button>
+            <button onclick="document.getElementById('admin-tab-apps').style.display='none'; document.getElementById('admin-tab-site').style.display='block';" style="flex:1; padding:8px; background:var(--neon-purple); border:none; border-radius:5px; color:#fff; font-weight:bold; cursor:pointer;">Diseño/Sitio</button>
+        </div>
+
+        <div id="admin-tab-apps" class="admin-form">
+            <input type="hidden" id="app-id">
+                 <span class="admin-group-label">INFORMACIÓN BÁSICA</span>
+            <input type="text" id="app-title" placeholder="Nombre App (Ej: Photo Editor)">
+            <input type="text" id="app-version" placeholder="Versión (Ej: 1.465.114)">
+            <input type="text" id="app-size" placeholder="Tamaño (Ej: 18 MB)">
+            <div style="font-size:10px; color:var(--neon-green); margin-bottom:10px; text-align:center; background: rgba(0,255,170,0.1); padding: 5px; border-radius: 5px;"><i class="fa-solid fa-clock"></i> La fecha de actualización se guardará automáticamente hoy.</div>       
+            
+                        <span class="admin-group-label">METADATOS</span>
+            <select id="app-category" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px; font-size: 13px; font-family: inherit; outline: none; cursor: pointer;">
+                <option value="Entretenimiento">Entretenimiento</option>
+                <option value="Musica">Música</option>
+                <option value="EdicionVideo">Edición Video</option>
+                <option value="EdicionImagen">Fotografía / Edición Imagen</option>
+                <option value="Juegos">Juegos</option>
+                <option value="Utilidades">Utilidades</option>
+                <option value="RedesSociales">Redes Sociales</option>
+                <option value="Informativo">Informativo</option>
+            </select>
+            <input type="text" id="app-developer" placeholder="Desarrollador (Ej: InShot Inc.)">
+
+            <input type="text" id="app-tags" placeholder="Tags (Ej: Premium, Mod, Editor)">
+            <input type="text" id="app-mod-info" placeholder="Mod Info (Ej: Premium Desbloqueado)">
+            
+            <span class="admin-group-label">IMÁGENES Y VIDEO</span>
+            <input type="text" id="app-image" placeholder="URL Icono Principal (Se llenará solo al subir imagen)">
+            <label style="font-size: 11px; color: #aaa; margin-bottom: 5px; display: block;">Subir Logo a Cloudinary (Carpeta Apstore):</label>
+            <input type="file" id="app-image-file" accept="image/*" style="background:#222; border:1px solid #444; color:#fff; padding:10px; width:100%; margin-bottom:5px; border-radius:5px;">
+            <div id="upload-status" style="color:var(--neon-green); font-size:11px; margin-bottom:10px; font-weight:bold;"></div>
+
+            <textarea id="app-carousel" rows="3" placeholder="URLs Carrusel (Separadas por comas)"></textarea>
+            <input type="text" id="app-video" placeholder="URL Video YouTube (Embed)">
+            
+            <span class="admin-group-label">DESCRIPCIONES</span>
+            <textarea id="app-desc-short" rows="3" placeholder="Descripción Corta (Admite HTML básico)"></textarea>
+            <textarea id="app-desc-full" rows="6" placeholder="Descripción Completa (Admite HTML)"></textarea>
+            
+            <span class="admin-group-label">INSTRUCCIONES INSTALACIÓN</span>
+            <textarea id="app-install-steps" rows="5" placeholder="Pasos de instalación (Dejar vacío para usar predeterminado)"></textarea>
+            
+            <span class="admin-group-label">ENLACES DE DESCARGA</span>
+            <input type="text" id="app-link-rec" placeholder="Link Recomendado (URL)">
+            <input type="text" id="app-link-alt" placeholder="Link Alternativo (URL)">
+            
+            <span class="admin-group-label">VERSIONES ANTERIORES</span>
+            <input type="text" id="app-ver-old-name" placeholder="Nombre Versión Anterior">
+            <input type="text" id="app-ver-old-link" placeholder="Link Versión Anterior">
+
+            <span class="admin-group-label">PERSONALIZACIÓN (HEX)</span>
+            <div style="display:flex; gap:5px;">
+                <input type="color" id="app-color-1" value="#FF00FF" style="height:40px; width:50px; padding:0;">
+                <input type="text" id="app-color-1-txt" placeholder="#FF00FF (Neon Principal)" onchange="document.getElementById('app-color-1').value = this.value">
+            </div>
+            <div style="display:flex; gap:5px;">
+                <input type="color" id="app-color-2" value="#8BC34A" style="height:40px; width:50px; padding:0;">
+                <input type="text" id="app-color-2-txt" placeholder="#8BC34A (Neon Secundario)" onchange="document.getElementById('app-color-2').value = this.value">
+            </div>
+
+            <div class="admin-btns">
+                <button class="btn-cancel" onclick="closeAdmin()">Cancelar</button>
+                <button class="btn-save" onclick="saveApp()">GUARDAR APP</button>
+            </div>
+        </div>
+
+        <div id="admin-tab-site" class="admin-form" style="display:none;">
+            <span class="admin-group-label">CONFIGURACIÓN GLOBAL (TEXTOS Y VIDEOS)</span>
+            <label style="font-size:10px; color:#aaa;">Video 1 (Página de Inicio)</label>
+            <input type="text" id="site-video-1" placeholder="URL SRC del iframe (Ej: https://www.youtube.com/embed/...)">
+            
+            <label style="font-size:10px; color:#aaa; margin-top:10px;">Video 2 (Página de Resultados)</label>
+            <input type="text" id="site-video-2" placeholder="URL SRC del iframe (Ej: https://www.youtube.com/embed/...)">
+            
+                        <label style="font-size:10px; color:#aaa; margin-top:10px;">Mensaje Evangelio (Efecto Máquina)</label>
+            <input type="text" id="site-notice" placeholder="Ej: Jesús es la resurrección y la vida">
+
+            <label style="font-size:10px; color:#aaa; margin-top:10px;">Enlace Canal de WhatsApp</label>
+            <input type="text" id="site-whatsapp" placeholder="Ej: https://whatsapp.com/channel/...">
+            
+                 <label style="font-size:10px; color:#aaa; margin-top:10px;">Enlace Canal de YouTube</label>
+            <input type="text" id="site-youtube" placeholder="Ej: https://youtube.com/...">
+            
+                       <label style="font-size:10px; color:#aaa; margin-top:10px;">Preguntas Frecuentes (Soporta HTML)</label>
+            <textarea id="site-faq" rows="6" placeholder="Pega aquí el código HTML de tus preguntas frecuentes (Ej: <div class='faq-category'>...)"></textarea>
+
+            <span class="admin-group-label" style="margin-top:20px;">CÓDIGOS DE PUBLICIDAD</span>
+            <label style="font-size:10px; color:#aaa;">Publicidad 1 (Banner en Inicio)</label>
+            <textarea id="site-ad1" rows="4" placeholder="Pega aquí el script o iframe de la publicidad 1"></textarea>
+            
+                        <label style="font-size:10px; color:#aaa; margin-top:10px;">Publicidad 2 (Scripts Pop-under / Resultados)</label>
+            <textarea id="site-ad2" rows="4" placeholder="Pega aquí el script o iframe de la publicidad 2"></textarea>
+
+            <span class="admin-group-label" style="margin-top:20px;">RASTREO / ANALÍTICAS</span>
+            <label style="font-size:10px; color:#aaa;">Código de Google Analytics (Opcional)</label>
+            <textarea id="site-analytics" rows="4" placeholder="Pega aquí tu script global de Analytics (Ej: <script async src=...)"></textarea>
+
+            <div class="admin-btns" style="margin-top:20px;">
+
+                <button class="btn-cancel" onclick="closeAdmin()">Cancelar</button>
+                <button class="btn-save" style="background:var(--neon-purple);" onclick="saveSiteConfig()">GUARDAR SITIO</button>
+            </div>
+        </div>
+    </div>
+
+    <div class='menu-overlay' id='menu-overlay' onclick='toggleMenu()'></div>
+    <div class='side-menu' id='side-menu'>
+        <div class='menu-header'>
+            <h3>MENÚ</h3>
+            <i class='fa-solid fa-xmark' onclick='toggleMenu()'></i>
+        </div>
+        
+        <div class='menu-links'>
+            <p class='menu-label'>Categorías</p>
+            <a href='#' onclick="filterApps('Entretenimiento'); toggleMenu()"><i class='fa-solid fa-film'></i> Entretenimiento</a>
+            <a href='#' onclick="filterApps('Musica'); toggleMenu()"><i class='fa-brands fa-spotify'></i> Música</a>
+            <a href='#' onclick="filterApps('EdicionVideo'); toggleMenu()"><i class='fa-solid fa-clapperboard'></i> Edición Video</a>
+            <a href='#' onclick="filterApps('EdicionImagen'); toggleMenu()"><i class='fa-solid fa-palette'></i> Fotografía</a>
+            <a href='#' onclick="filterApps('Juegos'); toggleMenu()"><i class='fa-solid fa-gamepad'></i> Juegos</a>
+            <a href='#' onclick="filterApps('Utilidades'); toggleMenu()"><i class='fa-solid fa-toolbox'></i> Utilidades</a>
+            <a href='#' onclick="filterApps('Informativo'); toggleMenu()"><i class='fa-solid fa-newspaper'></i> Informativo</a>
+            
+            <div class='divider'></div>
+            <a href='#' onclick="showFaq(); toggleMenu();"><i class='fa-solid fa-circle-question'></i> Ayuda / FAQ</a>
+        </div>
+    </div>
+
+    <header class='playstore-header'>
+        <div class='search-bar-container'>
+            <i class='fa-solid fa-bars menu-icon' onclick='toggleMenu()'></i>
+            
+            <div class='search-input-fake'>
+                <i class='fa-solid fa-magnifying-glass search-icon'></i>
+                <input autocomplete='off' id='searchInput' placeholder='Buscar apps y juegos...' type='text' oninput="searchApps()"/>
+            </div>
+            
+            <div class='profile-icon' onclick="openAdminCheck()">
+                <i class='fa-solid fa-user-astronaut'></i>
+            </div>
+        </div>
+
+        <div class='filter-chips'>
+            <span class='chip active' onclick="showHome()"><a href='#'>Para ti</a></span>
+            
+            <div class='chip-counter'>
+                <i class='fa-solid fa-users'></i> <span id='user-count'>...</span> Usuarios
+            </div>
+            
+            <span class='chip' onclick="loadAllApps()"><a href='#'>App recientes</a></span>
+            <span class='chip' onclick="filterApps('Premium')"><a href='#'>App exitosos</a></span>
+        </div>
+    </header>
+    <main class='main-content' id="main-container">
+        <div class='spacer-top'></div>
+        
+        <div id="adblock-warning" style="display:none; background: rgba(255,51,51,0.1); border: 1px solid var(--neon-red); color: #fff; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 12px; text-align: left; box-shadow: 0 0 15px rgba(255,51,51,0.2);">
+            <h4 style="color: var(--neon-red); margin-bottom: 5px;"><i class="fa-solid fa-triangle-exclamation"></i> AdBlock Detectado</h4>
+            Parece que usas un bloqueador de anuncios. Para seguir ofreciendo aplicaciones premium gratis, dependemos de la publicidad. Por favor, <b>desactiva tu AdBlocker</b> en este sitio.
+        </div>
+
+        <div id="home-view" class="view-section active">
+
+            <div class='hero-content-visual'>
+                <h1>APPS PREMIUM</h1>
+                <p class='evangelio-message' id='typing-text'><span class='cursor'>|</span></p>
+                <p class='subtitle'>BIBLIOTECA ACTUALIZADA 2026</p>
+            </div>
+
+                        <section id="ad-container-1" class='featured-banner' style="background: transparent; border: none; box-shadow: none; min-height: auto;">
+                <div style="width: 100%; padding: 30px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 10px; color: #777; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-rectangle-ad" style="font-size: 24px;"></i>
+                    <span>ESPACIO RESERVADO PARA PUBLICIDAD 1</span>
+                </div>
+            </section>
+
+            
+            <section class='video-section'>
+                <h3>VIDEO EXPLICATIVO</h3>
+                <div class='video-container'>
+                    <iframe allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen='allowfullscreen' frameborder='0' src='about:blank' title='Video Tutorial'>
+                    </iframe>
+                </div>
+            </section>
+
+            <h2 class='store-grid-title'>Categorías <i class='fa-solid fa-arrow-right' style='font-size:14px; opacity:0.5;'></i></h2>
+            
+            <section class='store-grid'>
+                <a class='store-card neon-blue' href='#' onclick="filterApps('Entretenimiento')">
+                    <div class='card-icon'><i class='fa-solid fa-film'></i></div>
+                    <div class='card-details'><h3>ENTRETENIMIENTO</h3><p>Cine y TV Premium</p></div>
+                    <div class='card-action'><span>ABRIR</span></div>
+                </a>
+                
+                <a class='store-card neon-green' href='#' onclick="filterApps('Musica')">
+                    <div class='card-icon'><i class='fa-brands fa-spotify'></i></div>
+                    <div class='card-details'><h3>MÚSICA</h3><p>Sin anuncios</p></div>
+                    <div class='card-action'><span>ABRIR</span></div>
+                </a>
+                
+                <a class='store-card neon-pink' href='#' onclick="filterApps('EdicionVideo')">
+                    <div class='card-icon'><i class='fa-solid fa-clapperboard'></i></div>
+                    <div class='card-details'><h3>EDICIÓN VIDEO</h3><p>Pro Desbloqueado</p></div>
+                    <div class='card-action'><span>ABRIR</span></div>
+                </a>
+                
+                <a class='store-card neon-yellow' href='#' onclick="filterApps('EdicionImagen')">
+                    <div class='card-icon'><i class='fa-solid fa-palette'></i></div>
+                    <div class='card-details'><h3>FOTOGRAFÍA</h3><p>Filtros Premium</p></div>
+                    <div class='card-action'><span>ABRIR</span></div>
+                </a>
+                
+                <a class='store-card neon-orange' href='#' onclick="filterApps('Juegos')">
+                    <div class='card-icon'><i class='fa-solid fa-gamepad'></i></div>
+                    <div class='card-details'><h3>JUEGOS MOD</h3><p>Dinero Ilimitado</p></div>
+                    <div class='card-action'><span>ABRIR</span></div>
+                </a>
+
+                <a class='store-card neon-purple' href='#' onclick="filterApps('Utilidades')">
+                    <div class='card-icon'><i class='fa-solid fa-toolbox'></i></div>
+                    <div class='card-details'><h3>UTILIDADES</h3><p>Herramientas Pro</p></div>
+                    <div class='card-action'><span>ABRIR</span></div>
+                </a>
+                
+                <a class='store-card neon-red' href='#' onclick="filterApps('RedesSociales')">
+                    <div class='card-icon'><i class='fa-brands fa-instagram'></i></div>
+                    <div class='card-details'><h3>REDES SOCIALES</h3><p>Modificaciones</p></div>
+                    <div class='card-action'><span>ABRIR</span></div>
+                </a>
+
+                <a class='store-card neon-gemini' href='#' onclick="filterApps('Informativo')">
+                    <div class='card-icon'><i class='fa-solid fa-newspaper'></i></div>
+                    <div class='card-details'><h3>INFORMATIVO</h3><p>Noticias y Más</p></div>
+                    <div class='card-action'><span>ABRIR</span></div>
+                </a>
+            </section>
+        </div>
+
+        <div id="results-view" class="view-section">
+            <h2 class='store-grid-title' id="results-title">Resultados <i class='fa-solid fa-layer-group'></i></h2>
+
+                        <div id="ad-container-2" style="width: 100%; margin: 20px auto; padding: 20px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 10px; color: #777; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-rectangle-ad" style="font-size: 24px;"></i>
+                <span>ESPACIO RESERVADO PARA PUBLICIDAD 2</span>
+            </div>
+
+            <section class='video-section' style='margin-bottom:20px;'>
+                <h3>GUÍA DE SALTO DE PUBLICIDAD IMPORTANTE VER</h3>
+                <div class='video-container'>
+                    <iframe allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen='allowfullscreen' frameborder='0' src='about:blank' title='Guía de Descarga'>
+                    </iframe>
+                </div>
+            </section>
+
+            <div id="loading-skeleton">
+                <div class="skeleton-box"><div class="skeleton-thumb"></div><div style="flex-grow:1;"><div class="skeleton-line w-70"></div><div class="skeleton-line w-40"></div></div></div>
+                <div class="skeleton-box"><div class="skeleton-thumb"></div><div style="flex-grow:1;"><div class="skeleton-line w-70"></div><div class="skeleton-line w-40"></div></div></div>
+                <div class="skeleton-box"><div class="skeleton-thumb"></div><div style="flex-grow:1;"><div class="skeleton-line w-70"></div><div class="skeleton-line w-40"></div></div></div>
+            </div>
+                        <div id="loading-msg" class="loading-msg">No hay aplicaciones subidas aún.</div>
+            <div class='blog-posts' id="apps-container"></div>
+
+            <button id="btn-load-more" onclick="loadMoreApps()" style="display:none; margin: 20px auto; background: rgba(0, 224, 255, 0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 10px 30px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.3s;">VER MÁS APPS <i class="fa-solid fa-angle-down"></i></button>
+
+            <div style='margin-top:30px; text-align:center;'>
+
+                <button onclick="showHome()" class='btn-send-form' style="background:transparent; border:1px solid var(--neon-blue);">
+                  <i class='fa-solid fa-arrow-left'></i> VOLVER AL INICIO
+                </button>
+            </div>
+        </div>
+        <div id="app-detail-view" class="view-section">
+            <div class="blogger-wrapper-final" style="background: transparent !important;">
+                
+                <div class="content-grid">
+                    <div class="left-column">
+                        <header class="top-headers">
+                            <span class="header-left">ZONA TECNO</span>
+                            <span class="header-right">APPS GRATIS</span>
+                        </header>
+                        <div class="product-metadata-section">
+                            <div class="product-header-flex">
+                                <div class="product-image-container">
+                                    <img id="detail-icon" src="" alt="Icono App">
+                                </div>
+                                <div class="product-title-block">
+                                    <h1 id="detail-title">TITULO</h1>
+                                    <span class="product-version" id="detail-cat-header" style="color: var(--color-neon-cyan);">CATEGORÍA</span>
+                                </div>
+                            </div>
+                            <div class="product-info-list">
+                                <div class="info-item">
+                                    <span class="info-label">NOMBRE</span>
+                                    <span class="info-value" id="detail-name-meta">...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">CATEGORÍA</span>
+                                    <span class="info-value" id="detail-cat-meta">...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">DESARROLLADOR</span>
+                                    <span class="info-value" id="detail-dev-meta">...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">VERSIÓN</span>
+                                    <span class="info-value" id="detail-ver-meta">...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">ACTUALIZADO</span>
+                                    <span class="info-value" id="detail-update-meta">...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">COMPATIBLE CON</span>
+                                    <span class="info-value">ANDROID 6.0+</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">GÉNERO</span>
+                                    <span class="info-value" id="detail-genre-meta">...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">TAMAÑO</span>
+                                    <span class="info-value" id="detail-size-meta">...</span>
+                                </div>
+                                <div class="info-item mod-info-full-width">
+                                    <span class="info-label">MOD INFO</span>
+                                    <span class="info-value mod-info-value" id="detail-mod-meta">...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="right-column">
+                        
+                        <div class="short-description" id="detail-desc-short"></div>
+                        
+                        <div class="section-title-divider">
+                            <h3>VISTA PREVIA DE LA APP</h3>
+                        </div>
+                        <div class="preview-images-carousel" id="coverflow-wrapper">
+                            </div>
+
+                        <div class="section-title-divider">
+                            <h3>DESCRIPCIÓN COMPLETA</h3>
+                        </div>
+                        <div class="full-description">
+                            <div id="detail-desc-full"></div>
+                            
+                            <div class="ad-frame-container" style="min-height: 100px; display: flex; align-items: center; justify-content: center; border: 1px dashed #333;">
+                                <span style="color: #555; font-size: 10px;">ESPACIO PUBLICIDAD (PENDIENTE)</span>
+                            </div>
+
+                            <h4 style="color: var(--color-neon-cyan); margin-top: 20px; margin-bottom: 5px; font-size: 1.1em; text-align: left;">PROCESO DE INSTALACIÓN (MOD)</h4>
+                            <div id="detail-install-container" style="margin-top: 0; text-align: left; text-transform: none; color: var(--color-text-secondary); font-size: 0.95em;">
+                                </div>
+                        </div>
+
+                        <div class="section-title-divider">
+                             <h3>VIDEO DE INSTALACIÓN</h3>
+                        </div>
+                        <div class="video-container">
+                            <iframe id="detail-video-frame" src="about:blank" allowfullscreen></iframe>
+                        </div>
+
+                        <div class="faq-section">
+                            <div class="faq-toggle-header accordion-toggle" onclick="toggleAccordion(this)">
+                                <i class="fas fa-chevron-down main-icon"></i> PREGUNTAS FRECUENTES IMPORTANTES LEER <i class="fas fa-chevron-down toggle-icon"></i>
+                            </div>
+                            <div class="accordion-content"> 
+                                <div class="faq-item">
+                                    <div class="faq-question nested-toggle" onclick="toggleNested(this)">El archivo que voy a descargar, ¿contiene virus o malware? <i class="fas fa-chevron-right nested-icon"></i></div>
+                                    <div class="faq-answer nested-content">
+                                        El archivo que descarga es una <span class="text-neon-main">versión MOD (modificada)</span> de una aplicación, lo que significa que ha sido alterada por desarrolladores externos para añadir funcionalidades o desbloquear contenido. Nos tomamos muy en serio la <span class="text-neon-lime">seguridad</span>. Analizamos cada archivo antes de publicarlo. No obstante, es habitual que las aplicaciones antivirus o los sistemas de seguridad de Android detecten estos archivos MOD como posible malware o software no deseado. Esto ocurre porque la aplicación no proviene de la <span class="text-neon-main">tienda oficial</span> y tiene un código modificado. En la mayoría de los casos, esta detección es un <span class="text-neon-lime">falso positivo</span> relacionado con la naturaleza no oficial del MOD. De hecho, muchos de nuestros usuarios, incluido el administrador del sitio, han utilizado estas aplicaciones <span class="text-neon-main">craqueadas</span> por años sin experimentar daños en sus dispositivos. Si desea la <span class="text-neon-lime">máxima seguridad</span> sin preocupaciones, siempre recomendamos adquirir la suscripción oficial de la aplicación.
+                                    </div>
+                                </div>
+                                <div class="faq-item">
+                                    <div class="faq-question nested-toggle" onclick="toggleNested(this)">¿Qué debo hacer si el enlace de descarga no funciona o me lleva a un error 404? <i class="fas fa-chevron-right nested-icon"></i></div>
+                                    <div class="faq-answer nested-content">
+                                        Si encuentra que un enlace está <span class="text-neon-main">caído, roto</span> o le devuelve un error 404, por favor, ayúdenos a <span class="text-neon-lime">corregirlo rápidamente</span>. Le pedimos que nos lo <span class="text-neon-main">reporte</span> utilizando nuestro formulario de opinión y contacto. Esto nos permite recibir la notificación de manera organizada, identificar exactamente qué aplicación falló y <span class="text-neon-lime">reemplazar el enlace</span> defectuoso lo antes posible. Generalmente, el equipo de soporte restablece los enlaces reportados en un plazo de <span class="text-neon-main">24 a 48 horas</span>. ¡Gracias por su colaboración!
+                                    </div>
+                                </div>
+                                <div class="faq-item">
+                                    <div class="faq-question nested-toggle" onclick="toggleNested(this)">¿Por qué tengo que pasar por varias páginas de publicidad antes de la descarga final? <i class="fas fa-chevron-right nested-icon"></i></div>
+                                    <div class="faq-answer nested-content">
+                                        La razón es simple: mantener la totalidad del contenido y las descargas <span class="text-neon-main">completamente gratuitas</span> para usted. El <span class="text-neon-lime">tráfico generado</span> por la publicidad que ve en esas páginas nos proporciona los recursos necesarios para cubrir los altos costos de <span class="text-neon-main">mantenimiento de los servidores</span>, el ancho de banda, la constante <span class="text-neon-lime">actualización</span> de las aplicaciones y la <span class="text-neon-main">seguridad</span> del sitio. Agradecemos su paciencia; es lo que nos permite seguir ofreciendo este servicio <span class="text-neon-lime">sin costo</span> para usted.
+                                    </div>
+                                </div>
+                                <div class="faq-item">
+                                    <div class="faq-question nested-toggle" onclick="toggleNested(this)">¿Existe algún riesgo de descargar virus o malware a través de los anuncios? <i class="fas fa-chevron-right nested-icon"></i></div>
+                                    <div class="faq-answer nested-content">
+                                        Aunque trabajamos constantemente para utilizar <span class="text-neon-main">redes de publicidad limpias</span>, siempre existe un <span class="text-neon-lime">riesgo mínimo</span> de que una ventana emergente o anuncio malicioso pueda intentar engañarlo. Es crucial que sepa dónde se encuentra el archivo final: la descarga legítima de la aplicación MOD siempre será redirigida a <span class="text-neon-main">servicios de almacenamiento en la nube conocidos y seguros</span> como <span class="text-neon-lime">MediaFire o MEGA</span>. <span class="text-neon-main">Consejo de seguridad:</span> si una ventana emergente intenta instalar un archivo directamente o lo redirige a un sitio desconocido antes de llegar a MediaFire o MEGA, <span class="text-neon-lime">ciérrela inmediatamente</span> y solo confíe en el botón de descarga final en estas plataformas.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-title-divider">
+                            <h3>OPCIONES DE DESCARGA</h3>
+                        </div>
+                        <div class="download-box">
+                            <div class="app-download-buttons">
+                                <a id="btn-download-rec" href="#" target="_blank" class="download-button option-1">DESCARGA RECOMENDABLE</a>
+                                <a id="btn-download-alt" href="#" target="_blank" class="download-button option-2">DESCARGAR ALTERNATIVO</a>
+                            </div>
+                        </div>
+
+                        <div class="other-versions-section">
+                            <div class="other-versions-toggle accordion-toggle" onclick="toggleAccordion(this)">
+                                <i class="fas fa-chevron-down main-icon"></i> OTRAS VERSIONES DISPONIBLES <i class="fas fa-chevron-down toggle-icon"></i>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="version-item">
+                                    <div class="version-name nested-toggle" onclick="toggleNested(this)">
+                                        <span id="detail-old-ver-name">VERSION ANTERIOR</span> 
+                                        <i class="fas fa-chevron-right nested-icon"></i>
+                                    </div>
+                                    <div class="version-links nested-content">
+                                        <a id="detail-old-ver-link-rec" href="#" target="_blank" class="version-link-recommend" style="display:block; margin-bottom:5px; color:var(--color-neon-lime);">Descarga Recomendada</a>
+                                        <a id="detail-old-ver-link-alt" href="#" target="_blank" class="version-link-alternate" style="display:block; color:var(--color-neon-cyan);">Descarga Alternativa</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-title-divider">
+                            <h3>EXPLORAR OTRAS APPS</h3>
+                        </div>
+                        <div class="other-apps-container">
+                            <a href="#" onclick="loadAllApps()" class="app-button website-explore">
+                                <i class="fas fa-mobile-alt"></i> REDIRIGIR A EXPLORAR OTRAS APPS
+                            </a>
+                        </div>
+                        
+                         <div class="social-follow-section" style="margin-top:20px;">
+                            <h4>ÚNETE A NUESTRO CANAL</h4>
+                            <div class="social-buttons">
+                                <a href="https://whatsapp.com/channel/0029VbBtvIf2f3EPc4r0Nz1q" target="_blank" class="social-button whatsapp full-width">
+                                    <i class="fab fa-whatsapp"></i> CANAL DE WHATSAPP
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="comment-form-container">
+                            <div class="section-title-divider problem-report-title-container">
+                                <h3>REPORTAR PROBLEMA</h3>
+                            </div>
+                            <p class="form-instruction" style="font-size:0.8em; color:#888;">TU DIRECCIÓN DE CORREO ELECTRÓNICO NO SERÁ PUBLICADA. LOS CAMPOS OBLIGATORIOS ESTÁN MARCADOS CON <span class="required-star">*</span></p>
+                            <form class="dark-form" action="https://formsubmit.co/ericmancilla275@gmail.com" method="POST">
+                                <input type="hidden" name="_captcha" value="false">
+                                <input type="hidden" name="_subject" value="Reporte de App (Desde Detalle)">
+                                <input type="hidden" name="_next" value="https://zonatecnoappstore.blogspot.com">
+                                
+                                <label for="comentario" class="comment-label">DETALLES DEL PROBLEMA <span class="required-star">*</span></label>
+                                <textarea id="comentario" name="message" required class="neon-textarea" placeholder="Describe el problema aquí..."></textarea>
+                                
+                                <div class="name-button-row">
+                                    <div class="input-group">
+                                        <label for="nombre" class="comment-label">Nombre <span class="required-star">*</span></label>
+                                        <input type="text" id="nombre" name="name" required class="form-input" placeholder="INGRESA TU NOMBRE AQUÍ">
+                                    </div>
+                                    <button type="submit" class="submit-button problem-submit-button">ENVIAR REPORTE</button>
+                                </div>
+                                <label for="correo" class="comment-label">Correo electrónico <span class="required-star">*</span></label>
+                                <input type="email" id="correo" name="email" required>
+                            </form>
+                        </div>
+                    </div> </div> </div>
+            
+            <div style='margin-top:20px; text-align:center;'>
+                <button onclick="showResults('Volviendo...')" class='btn-send-form' style="background:transparent; border:1px solid var(--neon-blue); width:200px;">
+                  <i class='fa-solid fa-arrow-left'></i> VOLVER
+                </button>
+            </div>
+        </div>
+
+                <section class="view-section" id='faq-view'>
+            <h2 class='faq-title'><i class='fa-solid fa-circle-question'></i> CENTRO DE AYUDA</h2>
+            
+            <div id="dynamic-faq-container">
+                <div class='faq-category'>💰 Sobre Publicidad y Apoyo (La parte honesta)</div>
+                <div class='faq-item'>
+                    <details>
+                        <summary>¿Por qué hay publicidad antes de la descarga?</summary>
+                        <p>"Queremos ser totalmente transparentes: sabemos que los acortadores pueden ser incómodos, pero es la única forma de financiar este proyecto. Gracias a esos clics logramos pagar los servidores y mantener esta nueva interfaz funcionando para ti. ¡Nuestra meta a futuro es eliminarlos y darte enlaces directos!"</p>
+                    </details>
+                </div>
+                <div class='faq-item'>
+                    <details>
+                        <summary>¿Cómo puedo apoyar a ZonaTecno si no tengo dinero?</summary>
+                        <p>"¡Tu presencia ya ayuda! Muchos vienen solo por la app, pero si quieres ser un verdadero crack: suscríbete al canal, deja tu like y comparte. Eso valora nuestro trabajo de programación y diseño, y nos motiva a seguir trayendo contenido premium."</p>
+                    </details>
+                </div>
+                <div class='faq-item'>
+                    <details>
+                        <summary>¿Para qué sirve lo que se recauda con los anuncios?</summary>
+                        <p>"Todo se reinvierte. Detrás de esta web hay mucho tiempo invertido escribiendo código y diseñando. Gracias al apoyo de este mes, logramos mudarnos a este sitio web más moderno, rápido y fácil de usar para ustedes."</p>
+                    </details>
+                </div>
+
+                <div class='faq-category'>🛠️ Solución de Problemas (Lo técnico)</div>
+                <div class='faq-item'>
+                    <details>
+                        <summary>Me sale el error 'No se instaló la aplicación', ¿qué hago?</summary>
+                        <p>"Esto suele pasar por un conflicto de firmas. Solución: Debes desinstalar cualquier versión anterior de la app (incluso la original de la Play Store) antes de instalar nuestra versión optimizada. ¡Reinicia tu móvil e intenta de nuevo!"</p>
+                    </details>
+                </div>
+                <div class='faq-item'>
+                    <details>
+                        <summary>Me aparece una advertencia de virus o Play Protect, ¿es peligroso?</summary>
+                        <p>"¡Tranquilo! Es un falso positivo común. Al ser aplicaciones modificadas para liberar funciones, Google a veces las marca como desconocidas. Nosotros probamos personalmente cada archivo antes de subirlo para garantizar tu seguridad."</p>
+                    </details>
+                </div>
+                <div class='faq-item'>
+                    <details>
+                        <summary>El enlace de descarga no funciona o está caído.</summary>
+                        <p>"¡Avísanos de inmediato! A veces los servidores eliminan los archivos. Puedes reportarlo en nuestro grupo de WhatsApp o en los comentarios del video correspondiente y lo resubiremos lo más rápido posible."</p>
+                    </details>
+                </div>
+                <div class='faq-item'>
+                    <details>
+                        <summary>¿Cómo actualizo una app sin perder mis datos?</summary>
+                        <p>"Si descargaste la versión anterior con nosotros, simplemente instala la nueva versión sobre la vieja (sin desinstalar). Si vienes de la versión original u otro sitio, tendrás que hacer una instalación limpia (podrías perder datos si no tienes copia de seguridad)."</p>
+                    </details>
+                </div>
+                
+                <div class='faq-category'>📱 Compatibilidad y Pedidos</div>
+                <div class='faq-item'>
+                    <details>
+                        <summary>¿Estas aplicaciones funcionan en PC o iPhone?</summary>
+                        <p>"Nuestro enfoque es 100% Android (archivos .APK). Para usarlas en PC necesitarás un emulador de Android. Lamentablemente, no funcionan en iPhone (iOS)."</p>
+                    </details>
+                </div>
+                <div class='faq-item'>
+                    <details>
+                        <summary>¿Puedo pedir una aplicación en específico?</summary>
+                        <p>"¡Claro! Leemos todos los comentarios. Si hay una app que la comunidad pide mucho, invertiremos el tiempo necesario en analizarla y traerla al canal optimizada."</p>
+                    </details>
+                </div>
+                <div class='faq-item'>
+                    <details>
+                        <summary>La aplicación se cierra sola (Crash), ¿tiene solución?</summary>
+                        <p>"Asegúrate de haber concedido todos los permisos necesarios en los ajustes de tu celular. Algunas apps optimizadas requieren permisos de almacenamiento o superposición para funcionar correctamente."</p>
+                    </details>
+                </div>
+            </div>
+
+            <div class='contact-form-container'>
+
+                <div class='contact-title'>¿No encontraste solución? Escríbenos</div>
+                
+                <form action='https://formsubmit.co/ericmancilla275@gmail.com' method='POST'>
+                    <input name='_captcha' type='hidden' value='false'/>
+                    <input name='_next' type='hidden' value='https://zonatecnoappstore.blogspot.com/search?q=faq'/>
+                    <input name='_subject' type='hidden' value='Nuevo Reporte desde Zona Tecno'/>
+                    <input name='_template' type='hidden' value='table'/>
+
+                    <div class='form-group'>
+                        <label>Nombre:</label>
+                        <input class='form-input' name='name' placeholder='Tu nombre' required='required' type='text'/>
+                    </div>
+                    <div class='form-group'>
+                        <label>Correo (para responderte):</label>
+                        <input class='form-input' name='email' placeholder='Tu correo' required='required' type='email'/>
+                    </div>
+                    <div class='form-group'>
+                        <label>Asunto:</label>
+                        <select class='form-input' name='subject'>
+                            <option value='Reporte de Fallo'>Link Caído / Fallo</option>
+                            <option value='Peticion App'>Pedir una App</option>
+                            <option value='Publicidad'>Problema con Publicidad</option>
+                            <option value='Otro'>Otro asunto</option>
+                        </select>
+                    </div>
+                    <div class='form-group'>
+                        <label>Mensaje:</label>
+                        <textarea class='form-input' name='message' placeholder='Describe tu problema o petición aquí...' required='required' rows='3'></textarea>
+                    </div>
+                    <button class='btn-send-form' type='submit'>
+                        <i class='fa-solid fa-paper-plane'></i> ENVIAR A SOPORTE
+                    </button>
+                </form>
+            </div>
+            
+            <div style='margin-top:30px; text-align:center;'>
+                <button onclick="showHome()" class='btn-send-form' style="background:transparent; border:1px solid var(--neon-blue);">
+                  <i class='fa-solid fa-arrow-left'></i> VOLVER AL INICIO
+                </button>
+            </div>
+        </section>
+        
+        <div class='spacer-bottom'></div>
+    </main>
+
+        <nav class='bottom-nav'>
+        <a class='nav-item active' href='#' onclick="showHome()">
+            <i class='fa-solid fa-house'></i><span>Inicio</span>
+        </a>
+        <a class='nav-item' href='https://whatsapp.com/channel/0029VbBtvIf2f3EPc4r0Nz1q' target='_blank' id="bottom-nav-wa">
+            <i class='fa-brands fa-whatsapp'></i><span>Canal</span>
+        </a>
+        <a class='nav-item' href='#' onclick="loadAllApps()">
+            <i class='fa-solid fa-layer-group'></i><span>Apps</span>
+        </a>
+        <a class='nav-item' href='#' onclick="showFaq()">
+            <i class='fa-solid fa-circle-question'></i><span>Ayuda</span>
+        </a>
+        <a class='nav-item' href='https://youtube.com/@zonatecno-e4r' target='_blank' id="bottom-nav-yt">
+            <i class='fa-brands fa-youtube'></i><span>YT</span>
+        </a>
+    </nav>
+
+    <div id="custom-toast" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: var(--glass-bg); border: 1px solid var(--neon-blue); color: #fff; padding: 12px 25px; border-radius: 30px; z-index: 9999; opacity: 0; transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); font-weight: bold; box-shadow: 0 0 15px rgba(0,224,255,0.4); pointer-events: none; font-size: 13px;">Mensaje</div>
+
+    <div id="login-modal" class="admin-modal" style="max-width: 320px; top: 40%;">
+        <h3 style="color:var(--neon-blue);"><i class="fa-solid fa-lock"></i> INICIAR SESIÓN</h3>
+        <p style="font-size:11px; color:#aaa; margin-bottom:15px;" id="login-modal-msg">Ingrese sus credenciales de Firebase.</p>
+        <div class="admin-form">
+            <input type="email" id="login-email" placeholder="Correo electrónico">
+            <input type="password" id="login-pass" placeholder="Contraseña">
+            <div class="admin-btns">
+                <button class="btn-cancel" onclick="document.getElementById('login-modal').style.display='none'">Cancelar</button>
+                <button class="btn-save" onclick="processLogin()">ENTRAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script src='https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js'></script>
+    
+    <script type="module">
+               
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, get, child, remove, update, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUVvr1gaFze1O_4n5i4-5OKfD1nh0kYpM",
+            authDomain: "apstore-8ba25.firebaseapp.com",
+            databaseURL: "https://apstore-8ba25-default-rtdb.firebaseio.com",
+            projectId: "apstore-8ba25",
+            storageBucket: "apstore-8ba25.firebasestorage.app",
+            messagingSenderId: "222996022136",
+            appId: "1:222996022136:web:b97aa5ff9cc5fa3b70be8d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+        
+        let allApps = []; 
+        let isAdminMode = false; 
+        let coverflowInterval = null;
+
+        // --- NAVEGACIÓN ---
+        window.switchView = function(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+        window.showHome = function() { document.getElementById('searchInput').value = ""; switchView('home-view'); }
+        window.showResults = function(title) { switchView('results-view'); if(title) document.getElementById('results-title').innerHTML = `${title} <i class='fa-solid fa-layer-group'></i>`; }
+        window.showFaq = function() { switchView('faq-view'); }
+
+        // --- LOGICA DETALLE APP + CARRUSEL ---
+        window.viewAppDetails = function(appId) {
+            const app = allApps.find(a => a.id === appId);
+            if(!app) return;
+
+            // 1. INYECTAR DATOS DE TEXTO
+            setText('detail-title', app.title);
+            setImg('detail-icon', app.image);
+            
+            setText('detail-cat-header', app.category || 'GENERAL');
+            setText('detail-name-meta', app.title);
+            setText('detail-cat-meta', app.category || 'N/A');
+            setText('detail-dev-meta', app.developer || 'N/A');
+            setText('detail-ver-meta', app.version || 'Latest');
+            setText('detail-update-meta', app.updated || 'Reciente');
+            setText('detail-genre-meta', app.category || 'App');
+            setText('detail-size-meta', app.size || 'Varios');
+            setText('detail-mod-meta', app.modInfo || 'Premium');
+            
+            // HTML permitidos
+            document.getElementById('detail-desc-short').innerHTML = app.descShort || "<p>Sin descripción corta.</p>";
+            document.getElementById('detail-desc-full').innerHTML = app.descFull || "<p>Sin descripción detallada.</p>";
+            
+            // --- INSTALACIÓN EDITABLE ---
+            const installContainer = document.getElementById('detail-install-container');
+            if (app.installSteps && app.installSteps.trim() !== "") {
+                installContainer.innerHTML = app.installSteps; 
+            } else {
+                installContainer.innerHTML = `
+                    Para instalar <span class="text-neon-main">esta App Premium</span>, sigue estos sencillos pasos <span class="text-neon-lime">cuidadosamente</span>:<br><br>
+                    <span class="text-neon-main">1. Desinstalar Versión Oficial:</span> Si ya tienes instalada la versión de la Play Store, es obligatorio desinstalarla.<br>
+                    <span class="text-neon-main">2. Descargar la APK:</span> <span class="text-neon-lime">Utiliza los botones</span> de abajo.<br>
+                    <span class="text-neon-main">3. Instalar y Abrir:</span> <span class="text-neon-lime">Localiza el archivo APK</span> y ejecútalo. ¡Disfruta!
+                `;
+            }
+
+            // Links
+            document.getElementById('btn-download-rec').href = app.linkRec || "#";
+            document.getElementById('btn-download-alt').href = app.linkAlt || "#";
+            
+            // Video
+            const vidFrame = document.getElementById('detail-video-frame');
+            if(app.video && app.video.trim() !== "") vidFrame.src = app.video;
+            else vidFrame.src = "about:blank";
+
+            // Version Antigua
+            setText('detail-old-ver-name', app.oldVerName || "No disponible");
+            document.getElementById('detail-old-ver-link-rec').href = app.oldVerLink || "#";
+            
+            // 2. COLORES NEON PERSONALIZADOS
+            document.documentElement.style.setProperty('--dyn-neon-1', app.color1 || '#FF00FF');
+            document.documentElement.style.setProperty('--dyn-neon-2', app.color2 || '#8BC34A');
+
+            // 3. INICIAR CARRUSEL
+            initCoverflow(app.carousel || "");
+
+            switchView('app-detail-view');
+        }
+
+        function setText(id, txt) { const el = document.getElementById(id); if(el) el.innerText = txt; }
+        function setImg(id, src) { const el = document.getElementById(id); if(el) el.src = src; }
+
+        // --- CARRUSEL LOGICA ---
+        function initCoverflow(imagesStr) {
+            const wrapper = document.getElementById('coverflow-wrapper');
+            wrapper.innerHTML = '';
+            if(coverflowInterval) clearInterval(coverflowInterval);
+
+            let images = [];
+            if(imagesStr && imagesStr.trim() !== "") {
+                images = imagesStr.split(',').map(s => s.trim()).filter(s => s !== "");
+            }
+            
+            if(images.length === 0) {
+                wrapper.innerHTML = "<p style='text-align:center; padding-top:150px; color:#555;'>Sin capturas</p>";
+                return;
+            }
+
+            images.forEach(src => {
+                const div = document.createElement('div');
+                div.className = 'screenshot-item';
+                div.innerHTML = `<img src="${src}" onerror="this.style.display='none'">`;
+                wrapper.appendChild(div);
+            });
+
+            let currentIndex = 0;
+            const updatePositions = () => {
+                const cards = wrapper.querySelectorAll('.screenshot-item');
+                const total = cards.length;
+                cards.forEach((card, i) => {
+                    let offset = i - currentIndex;
+                    if (offset > total / 2) offset -= total;
+                    if (offset < -total / 2) offset += total;
+                    
+                    card.className = 'screenshot-item'; 
+                    if (offset === 0) card.classList.add('center');
+                    else if (offset === -1) card.classList.add('left');
+                    else if (offset === 1) card.classList.add('right');
+                    else if (offset < -1) card.classList.add('hidden-left');
+                    else card.classList.add('hidden-right');
+                });
+            };
+
+            updatePositions();
+            coverflowInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % images.length;
+                updatePositions();
+            }, 3000);
+        }
+
+        // --- FIREBASE CRUD ---
+            async function loadAppsFromFirebase() {
+            const skeleton = document.getElementById("loading-skeleton");
+            const emptyMsg = document.getElementById("loading-msg");
+            if(skeleton) skeleton.style.display = "block";
+            if(emptyMsg) emptyMsg.style.display = "none";
+            
+            try {
+                const snapshot = await get(child(ref(database), "apps"));
+                allApps = [];
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    for (let key in data) {
+                        let appData = data[key];
+                        appData.id = key;
+                        allApps.push(appData);
+                    }
+                    allApps.sort((a, b) => b.timestamp - a.timestamp);
+                }
+                
+                if(skeleton) skeleton.style.display = "none";
+                if(allApps.length === 0 && emptyMsg) {
+                    emptyMsg.style.display = "block";
+                }
+            } catch(e) {
+                console.error("Error al cargar apps:", e);
+                if(skeleton) skeleton.style.display = "none";
+                if(emptyMsg) {
+                    emptyMsg.innerText = "Error de conexión a la base de datos.";
+                    emptyMsg.style.display = "block";
+                }
+            }
+        }
+
+               let currentAppsList = [];
+        let currentAppsDisplayed = 0;
+        const APPS_PER_PAGE = 12;
+
+        window.renderApps = function(appsList, isAppend = false) {
+            const container = document.getElementById("apps-container");
+            const btnLoadMore = document.getElementById("btn-load-more");
+
+            if (!isAppend) {
+                currentAppsList = appsList;
+                currentAppsDisplayed = 0;
+                container.innerHTML = "";
+            }
+
+            if(currentAppsList.length === 0) { 
+                container.innerHTML = "<p style='color:#888; margin-top:20px; text-align:center;'>Vacío</p>"; 
+                if(btnLoadMore) btnLoadMore.style.display = "none";
+                return; 
+            }
+
+            const appsToRender = currentAppsList.slice(currentAppsDisplayed, currentAppsDisplayed + APPS_PER_PAGE);
+
+            appsToRender.forEach(app => {
+                const adminControls = isAdminMode ? `
+                    <div style="position: absolute; right: 5px; top: 5px; z-index: 20; background:rgba(0,0,0,0.9); padding:5px; border-radius:8px; border:1px solid #444;" onclick="event.stopPropagation()">
+                        <i class="fa-solid fa-pen edit-btn" style="color:#ffaa00; margin-right:8px;" onclick="editApp('${app.id}')"></i>
+                        <i class="fa-solid fa-trash delete-btn" style="color:#ff3333;" onclick="deleteApp('${app.id}')"></i>
+                    </div>` : '';
+                
+                const html = `
+                    <div class='custom-post' onclick="viewAppDetails('${app.id}')">
+                        ${adminControls}
+                        <img class='post-thumb' src='${app.image}' onerror="this.src='https://cdn-icons-png.flaticon.com/512/104/104663.png'">
+                        <div class='post-info'>
+                            <h3 class='post-title'>${app.title}</h3>
+                            <div class='post-tags-inline'>
+                                <span>${app.category || 'App'}</span>
+                                <span style="color:var(--neon-green)">${app.version || 'v1.0'}</span>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right" style="color:#555; font-size:12px; margin-left:10px;"></i>
+                    </div>`;
+                container.innerHTML += html;
+            });
+
+            currentAppsDisplayed += appsToRender.length;
+
+            if (btnLoadMore) {
+                btnLoadMore.style.display = currentAppsDisplayed < currentAppsList.length ? "block" : "none";
+            }
+        }
+
+        window.loadMoreApps = function() {
+            renderApps(currentAppsList, true);
+        }
+
+               window.saveApp = async function() {
+            const id = document.getElementById('app-id').value;
+            const data = {
+                title: document.getElementById('app-title').value,
+                version: document.getElementById('app-version').value,
+                updated: (() => { const m=["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"]; const d=new Date(); return m[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear(); })(),
+                size: document.getElementById('app-size').value,
+
+                category: document.getElementById('app-category').value,
+                developer: document.getElementById('app-developer').value,
+                tags: document.getElementById('app-tags').value.split(','),
+                modInfo: document.getElementById('app-mod-info').value,
+                image: document.getElementById('app-image').value,
+                carousel: document.getElementById('app-carousel').value,
+                video: document.getElementById('app-video').value,
+                descShort: document.getElementById('app-desc-short').value,
+                descFull: document.getElementById('app-desc-full').value,
+                linkRec: document.getElementById('app-link-rec').value,
+                linkAlt: document.getElementById('app-link-alt').value,
+                oldVerName: document.getElementById('app-ver-old-name').value,
+                oldVerLink: document.getElementById('app-ver-old-link').value,
+                color1: document.getElementById('app-color-1').value,
+                color2: document.getElementById('app-color-2').value,
+                installSteps: document.getElementById('app-install-steps') ? document.getElementById('app-install-steps').value : "",
+                timestamp: Date.now()
+            };
+
+                        if(!data.title) return showToast("Error: Falta el título de la App", true);
+
+            const btn = document.querySelector('.btn-save'); btn.innerText = "Guardando...";
+            try {
+                if (id) { 
+                    await update(ref(database, "apps/" + id), data); 
+                    showToast("App editada correctamente"); 
+                } else { 
+                    await push(ref(database, "apps"), data); 
+                    showToast("App publicada con éxito"); 
+                }
+                closeAdmin();
+                await loadAppsFromFirebase();
+                if(document.getElementById('results-view').classList.contains('active')) loadAllApps();
+            } catch (e) { showToast("Error al guardar: " + e.message, true); }
+            btn.innerText = "GUARDAR APP";
+        }
+
+                window.editApp = function(id) {
+            const app = allApps.find(a => a.id === id);
+            if(!app) return;
+            document.getElementById('app-id').value = app.id;
+            const fields = {
+                'app-title': app.title, 'app-version': app.version, 'app-size': app.size,
+                'app-category': app.category, 'app-developer': app.developer, 'app-tags': (app.tags||[]).join(','),
+
+                'app-mod-info': app.modInfo, 'app-image': app.image, 'app-carousel': app.carousel, 'app-video': app.video,
+                'app-desc-short': app.descShort, 'app-desc-full': app.descFull, 'app-link-rec': app.linkRec,
+                'app-link-alt': app.linkAlt, 'app-ver-old-name': app.oldVerName, 'app-ver-old-link': app.oldVerLink,
+                'app-color-1': app.color1 || '#FF00FF', 'app-color-2': app.color2 || '#8BC34A',
+                'app-install-steps': app.installSteps || ""
+            };
+            for(let key in fields) { if(document.getElementById(key)) document.getElementById(key).value = fields[key] || ""; }
+            document.getElementById('admin-tab-apps').style.display = 'block';
+            document.getElementById('admin-tab-site').style.display = 'none';
+            document.getElementById('admin-modal').style.display = 'block';
+        }
+
+        window.deleteApp = async function(id) { 
+            if(confirm("¿Seguro que deseas eliminar esta app permanentemente?")) { 
+                try {
+                    await remove(ref(database, "apps/" + id)); 
+                    showToast("App eliminada correctamente");
+                    await loadAppsFromFirebase(); 
+                    loadAllApps(); 
+                } catch(e) {
+                    showToast("Error al eliminar: " + e.message, true);
+                }
+            } 
+        }
+
+        window.searchApps = function() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            if(q.length === 0) { showHome(); return; }
+            const filtered = allApps.filter(app => app.title.toLowerCase().includes(q) || (app.tags && app.tags.some(t=>t.toLowerCase().includes(q))));
+            renderApps(filtered);
+            if(!document.getElementById('results-view').classList.contains('active')) { switchView('results-view'); document.getElementById('results-title').innerHTML = "Buscando..."; }
+        }
+        window.filterApps = function(cat) {
+            const filtered = allApps.filter(app => (app.category||"").toLowerCase().includes(cat.toLowerCase()) || (app.tags && app.tags.some(t=>t.toLowerCase().includes(cat.toLowerCase()))));
+            renderApps(filtered); showResults(cat);
+        }
+        window.loadAllApps = function() { renderApps(allApps); showResults("Todas"); }
+                window.openPanel = async () => {
+            document.getElementById('app-id').value = "";
+            const inputs = document.querySelectorAll('#admin-tab-apps input:not([type="color"]), #admin-tab-apps textarea');
+            inputs.forEach(input => input.value = "");
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('admin-modal').style.display = 'block';
+            await loadSiteConfig();
+        };
+
+        window.openAdminCheck = function() {
+            if(isAdminMode) { 
+                openPanel();
+            } else { 
+                document.getElementById('login-modal').style.display = 'block';
+                if(location.protocol === 'file:') {
+                    document.getElementById('login-modal-msg').innerText = "Modo Local (Celular) Detectado: Usa tu contraseña base en lugar de Firebase.";
+                    document.getElementById('login-email').style.display = 'none';
+                }
+            }
+        }
+
+        window.processLogin = async function() {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            
+            if(location.protocol === 'file:') {
+                if(pass === "rapers275dk") {
+                    isAdminMode = true;
+                    showToast("Acceso concedido (Modo Local)");
+                    openPanel();
+                } else {
+                    showToast("Contraseña incorrecta", true);
+                }
+                return;
+            }
+
+            if (!email || !pass) return showToast("Llena correo y contraseña", true);
+            const btn = document.querySelector('#login-modal .btn-save');
+            btn.innerText = "...";
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                isAdminMode = true; 
+                showToast("Acceso de seguridad concedido"); 
+                openPanel();
+            } catch (error) {
+                showToast("Error de autenticación: Revisa tus datos", true);
+            }
+            btn.innerText = "ENTRAR";
+        }
+
+
+                    window.showToast = function(msg, isError = false) {
+            const toast = document.getElementById('custom-toast');
+            toast.innerText = msg;
+            toast.style.borderColor = isError ? "var(--neon-red)" : "var(--neon-blue)";
+            toast.style.boxShadow = isError ? "0 0 15px rgba(255,51,51,0.4)" : "0 0 15px rgba(0,224,255,0.4)";
+            toast.style.transform = "translateX(-50%) translateY(0)";
+            toast.style.opacity = "1";
+            setTimeout(() => { toast.style.transform = "translateX(-50%) translateY(-100px)"; toast.style.opacity = "0"; }, 3500);
+        }
+
+                       window.loadSiteConfig = async function() {
+            try {
+                const configSnap = await get(child(ref(database), "config/global"));
+                if (configSnap.exists()) {
+                    const data = configSnap.val();
+                    if(document.getElementById('site-video-1')) document.getElementById('site-video-1').value = data.video1 || "";
+                    if(document.getElementById('site-video-2')) document.getElementById('site-video-2').value = data.video2 || "";
+                    if(document.getElementById('site-notice')) document.getElementById('site-notice').value = data.notice || "";
+                    if(document.getElementById('site-whatsapp')) document.getElementById('site-whatsapp').value = data.whatsapp || "";
+                    if(document.getElementById('site-youtube')) document.getElementById('site-youtube').value = data.youtube || "";
+                    if(document.getElementById('site-faq')) document.getElementById('site-faq').value = data.faq || "";
+                    if(document.getElementById('site-ad1')) document.getElementById('site-ad1').value = data.ad1 || "";
+                    if(document.getElementById('site-ad2')) document.getElementById('site-ad2').value = data.ad2 || "";
+                    if(document.getElementById('site-analytics')) document.getElementById('site-analytics').value = data.analytics || "";
+                }
+            } catch(e) { console.error("Error cargando config", e); }
+        }
+
+        window.saveSiteConfig = async function() {
+            const btn = document.querySelector('#admin-tab-site .btn-save');
+            btn.innerText = "Guardando...";
+            const data = {
+                video1: document.getElementById('site-video-1').value,
+                video2: document.getElementById('site-video-2').value,
+                notice: document.getElementById('site-notice').value,
+                whatsapp: document.getElementById('site-whatsapp').value,
+                youtube: document.getElementById('site-youtube').value,
+                faq: document.getElementById('site-faq').value,
+                ad1: document.getElementById('site-ad1').value,
+                ad2: document.getElementById('site-ad2').value,
+                analytics: document.getElementById('site-analytics').value
+            };
+            try {
+                await set(ref(database, "config/global"), data);
+                showToast("Configuración del sitio guardada");
+                applySiteConfig(data); 
+            } catch(e) { showToast("Error: " + e.message, true); }
+            btn.innerText = "GUARDAR SITIO";
+        }
+
+        window.applySiteConfig = function(data) {
+            const v1 = document.querySelector('.video-section iframe[title="Video Tutorial"]');
+            const v2 = document.querySelector('.video-section iframe[title="Guía de Descarga"]');
+            if(v1 && data.video1) v1.src = data.video1;
+            if(v2 && data.video2) v2.src = data.video2;
+            if(data.notice) {
+                window.globalNotice = data.notice;
+                if(window.restartTyping) window.restartTyping();
+            }
+            if(data.whatsapp) {
+                const waBtn = document.getElementById('bottom-nav-wa');
+                const detailWaBtn = document.querySelector('.social-button.whatsapp');
+                if(waBtn) waBtn.href = data.whatsapp;
+                if(detailWaBtn) detailWaBtn.href = data.whatsapp;
+            }
+            if(data.youtube) {
+                const ytBtn = document.getElementById('bottom-nav-yt');
+                if(ytBtn) ytBtn.href = data.youtube;
+            }
+            if(data.faq && data.faq.trim() !== "") {
+                const faqContainer = document.getElementById('dynamic-faq-container');
+                if(faqContainer) faqContainer.innerHTML = data.faq;
+            }
+            if(data.ad1 && data.ad1.trim() !== "") {
+                const ad1 = document.getElementById('ad-container-1');
+                if(ad1) {
+                    ad1.innerHTML = "";
+                    ad1.appendChild(document.createRange().createContextualFragment(data.ad1));
+                }
+            }
+            if(data.ad2 && data.ad2.trim() !== "") {
+                const ad2 = document.getElementById('ad-container-2');
+                if(ad2) {
+                    ad2.innerHTML = "";
+                    ad2.appendChild(document.createRange().createContextualFragment(data.ad2));
+                    ad2.style.border = "none";
+                    ad2.style.padding = "0";
+                }
+            }
+            if(data.analytics && data.analytics.trim() !== "") {
+                const oldScript = document.getElementById('injected-analytics');
+                if(oldScript) oldScript.remove();
+                const analyticsSpan = document.createElement('span');
+                analyticsSpan.id = 'injected-analytics';
+                analyticsSpan.appendChild(document.createRange().createContextualFragment(data.analytics));
+                document.body.appendChild(analyticsSpan);
+            }
+        }
+
+        setTimeout(async () => {
+            try {
+                const configSnap = await get(child(ref(database), "config/global"));
+                if(configSnap.exists()) applySiteConfig(configSnap.val());
+            } catch(e){}
+        }, 1000);
+
+
+        window.closeAdmin = function() { document.getElementById('admin-modal').style.display = 'none'; }
+
+        document.getElementById('app-image-file').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            document.getElementById('upload-status').innerText = "Subiendo a Cloudinary...";
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'Apstore');
+            formData.append('folder', 'Apstore');
+
+            try {
+                const res = await fetch('https://api.cloudinary.com/v1_1/dcg9ihpvr/image/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if(data.secure_url) {
+                    document.getElementById('app-image').value = data.secure_url;
+                    document.getElementById('upload-status').innerText = "¡Logo subido con éxito!";
+                } else {
+                    document.getElementById('upload-status').innerText = "Error: " + (data.error ? data.error.message : "Desconocido");
+                }
+            } catch (err) {
+                document.getElementById('upload-status').innerText = "Error de conexión al subir.";
+            }
+        });
+
+        loadAppsFromFirebase();
+    </script>
+
+    <script>
+        // Toggle Menu
+        window.toggleMenu = function() {
+            const m = document.getElementById('side-menu'), o = document.getElementById('menu-overlay');
+            m.classList.toggle('active'); o.classList.toggle('active');
+        }
+        // Acordeon Lógica
+        window.toggleAccordion = function(el) {
+            const content = el.nextElementSibling;
+            const icon = el.querySelector('.toggle-icon');
+            if(content.style.maxHeight && content.style.maxHeight !== '0px') {
+                content.style.maxHeight = '0px'; content.classList.remove('is-main-open');
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            } else {
+                content.style.maxHeight = '2000px'; content.classList.add('is-main-open');
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            }
+        }
+        window.toggleNested = function(el) {
+            const content = el.nextElementSibling;
+            const icon = el.querySelector('.nested-icon');
+            if(content.style.maxHeight && content.style.maxHeight !== '0px') {
+                content.style.maxHeight = '0px'; icon.classList.replace('fa-chevron-down', 'fa-chevron-right');
+            } else {
+                content.style.maxHeight = '500px'; icon.classList.replace('fa-chevron-right', 'fa-chevron-down');
+            }
+        }
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. PARTICULAS (CONFIGURACIÓN ORIGINAL)
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": { "value": 25, "density": { "enable": true, "value_area": 800 } },
+                    "color": { "value": "#00e0ff" },
+                    "shape": { "type": "circle" },
+                    "opacity": { "value": 0.5, "random": true, "anim": { "enable": true, "speed": 1, "opacity_min": 0.1, "sync": false } },
+                    "size": { "value": 3, "random": true, "anim": { "enable": false, "speed": 40, "size_min": 0.1, "sync": false } },
+                    "line_linked": { "enable": false, "distance": 150, "color": "#00e0ff", "opacity": 0.4, "width": 1 },
+                    "move": { "enable": true, "speed": 2, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false, "attract": { "enable": false, "rotateX": 600, "rotateY": 1200 } }
+                },
+                "interactivity": {
+                    "detect_on": "window",
+                    "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "repulse" }, "resize": true },
+                    "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 1 } }, "bubble": { "distance": 400, "size": 40, "duration": 2, "opacity": 8, "speed": 3 }, "repulse": { "distance": 200, "duration": 0.4 }, "push": { "particles_nb": 4 }, "remove": { "particles_nb": 2 } }
+                },
+                "retina_detect": true
+            });
+            
+                        // 2. TEXTO MAQUINA
+            window.globalNotice = window.globalNotice || "Jesús es la resurrección y la vida"; 
+            let typeIndex = 0;
+            function type(){ 
+                const txt = window.globalNotice || "";
+                if(typeIndex <= txt.length){ 
+                    document.getElementById('typing-text').innerHTML = txt.substring(0,typeIndex)+'<span class="cursor">|</span>'; 
+                    typeIndex++; 
+                    setTimeout(type,100); 
+                } 
+            }
+            setTimeout(type, 1500);
+            
+            window.restartTyping = function() {
+                typeIndex = 0;
+                document.getElementById('typing-text').innerHTML = '<span class="cursor">|</span>';
+                type();
+            }
+
+            // 3. CONTADOR DE USUARIOS (RESTAURADO)
+            const userCountElement = document.getElementById('user-count');
+            if(userCountElement) {
+                const MIN_USERS = 50;
+                const MAX_USERS = 700;
+                let storedUsers = sessionStorage.getItem('currentOnlineUsers');
+                let activeUsers;
+
+                if (storedUsers) {
+                    activeUsers = parseInt(storedUsers) + (Math.floor(Math.random() * 5) - 2);
+                } else {
+                    activeUsers = Math.floor(Math.random() * (MAX_USERS - MIN_USERS + 1) + MIN_USERS);
+                }
+
+                if(activeUsers < MIN_USERS) activeUsers = MIN_USERS;
+                if(activeUsers > MAX_USERS) activeUsers = MAX_USERS;
+
+                userCountElement.innerText = activeUsers;
+                sessionStorage.setItem('currentOnlineUsers', activeUsers);
+
+                function updateUsers() {
+                    let change = Math.floor(Math.random() * 3) + 1; 
+                    let direction = Math.random() > 0.5 ? 1 : -1;
+                    activeUsers += (change * direction);
+                    if (activeUsers < MIN_USERS) activeUsers = MIN_USERS + Math.floor(Math.random() * 3);
+                    if (activeUsers > MAX_USERS) activeUsers = MAX_USERS - Math.floor(Math.random() * 3);
+                    userCountElement.innerText = activeUsers;
+                    sessionStorage.setItem('currentOnlineUsers', activeUsers);
+                    let nextTime = Math.floor(Math.random() * 4000) + 2000;
+                    setTimeout(updateUsers, nextTime);
+                }
+                               setTimeout(updateUsers, 3000);
+            }
+
+            // DETECCIÓN DE ADBLOCK SUTIL
+            setTimeout(() => {
+                const fakeAd = document.createElement('div');
+                fakeAd.innerHTML = '&nbsp;';
+                fakeAd.className = 'adsbox ad-placement doubleclick ad-placeholder adsense';
+                fakeAd.style.position = 'absolute';
+                fakeAd.style.top = '-1000px';
+                document.body.appendChild(fakeAd);
+                
+                setTimeout(() => {
+                    if (fakeAd.offsetHeight === 0) {
+                        const warning = document.getElementById('adblock-warning');
+                        if (warning) warning.style.display = 'block';
+                    }
+                    fakeAd.remove();
+                }, 300);
+            }, 1000);
+            
+        });
+    </script>
+</body>
+</html>
