@@ -1134,24 +1134,26 @@
         <p style="font-size:13px; color:#fff; margin-bottom:10px; line-height:1.4;">Recuerda ver el <b>video de salto de publicidad</b> para no tener problemas al descargar la APK.</p>
         <p style="font-size:11px; color:#aaa; margin-bottom:15px;">Al ver la publicidad nos ayudas a mantener los servidores activos y seguir trayendo contenido premium.</p>
         
-        <div style="font-size:42px; font-weight:900; color:var(--neon-green); margin-bottom:5px; text-shadow: 0 0 15px var(--neon-green);" id="dl-countdown">10</div>
-        <p style="font-size:13px; color:var(--neon-blue); font-weight:bold; margin-bottom: 0;">Redirigiendo en <span id="dl-countdown-text">10</span>...</p>
+              <div style="font-size:42px; font-weight:900; color:var(--neon-green); margin-bottom:5px; text-shadow: 0 0 15px var(--neon-green);" id="dl-countdown">5</div>
+
+<p style="font-size:13px; color:var(--neon-blue); font-weight:bold; margin-bottom: 0;">Redirigiendo en <span id="dl-countdown-text">5</span>...</p>
     </div>
 
     <div class="menu-overlay" id="dl-overlay" style="z-index: 3999;"></div>
         <div id="ad-unlock-modal" class="admin-modal" style="max-width: 350px; top: 50%; text-align: center; z-index: 4000; border-color: var(--neon-purple); padding: 25px 20px;">
         <i class="fa-solid fa-xmark" style="color:#fff; font-size:20px; cursor:pointer; position:absolute; top:15px; right:15px;" onclick="document.getElementById('ad-unlock-modal').style.display='none'; document.getElementById('dl-overlay').classList.remove('active');"></i>
         <h3 style="color:var(--neon-purple); border:none; margin-bottom:15px; font-size: 16px;"><i class="fa-solid fa-unlock-keyhole"></i> DESBLOQUEAR DESCARGA</h3>
-        <p style="font-size:12px; color:#aaa; margin-bottom:20px;">Por favor, completa los siguientes pasos para revelar el enlace directo. Esto nos ayuda a mantener el sitio gratuito.</p>
+              <p style="font-size:13px; color:#fff; margin-bottom:10px; line-height: 1.4;">Para obtener tu enlace directo a <b>MediaFire</b>, completa los 3 pasos de publicidad.</p>
+        <p style="font-size:11px; color:#aaa; margin-bottom:20px;">Cada paso dura solo 15 segundos. Al finalizar, el candado se abrirá.</p>
         
         <button id="btn-ad-step-1" onclick="executeAdStep(1)" style="width:100%; padding:12px; margin-bottom:10px; background:var(--neon-blue); color:#000; font-weight:bold; border:none; border-radius:5px; cursor:pointer; transition:0.3s;">Paso 1: Ver Publicidad</button>
         
         <button id="btn-ad-step-2" onclick="executeAdStep(2)" style="width:100%; padding:12px; margin-bottom:10px; background:#333; color:#666; font-weight:bold; border:none; border-radius:5px; cursor:not-allowed; transition:0.3s;" disabled>Paso 2: Bloqueado</button>
         
-        <button id="btn-ad-step-3" onclick="executeAdStep(3)" style="width:100%; padding:12px; margin-bottom:15px; background:#333; color:#666; font-weight:bold; border:none; border-radius:5px; cursor:not-allowed; transition:0.3s;" disabled>Paso 3: Ver Publicidad Final</button>
+        <button id="btn-ad-step-3" onclick="executeAdStep(3)" style="width:100%; padding:12px; margin-bottom:15px; background:#333; color:#666; font-weight:bold; border:none; border-radius:5px; cursor:not-allowed; transition:0.3s;" disabled>Paso 3: Bloqueado</button>
         
-        <a id="btn-ad-final" href="#" target="_blank" style="display:none; width:100%; padding:12px; background:var(--neon-green); color:#000; font-weight:bold; border:none; border-radius:5px; text-decoration:none; cursor:pointer;">¡DESCARGAR AHORA!</a>
-        
+        <a id="btn-ad-final" href="#" target="_blank" style="display:flex; justify-content:center; align-items:center; gap:8px; width:100%; padding:12px; background:#222; color:#666; font-weight:bold; border:1px solid #444; border-radius:5px; text-decoration:none; cursor:not-allowed; pointer-events:none;"><i class="fa-solid fa-lock"></i> MEDIAFIRE BLOQUEADO</a>
+       
         <p id="ad-unlock-status" style="font-size:12px; color:var(--neon-yellow); margin-top:10px; font-weight:bold; height:15px;"></p>
     </div>
 
@@ -1869,10 +1871,9 @@
             modal.style.display = 'block';
             overlay.classList.add('active');
             
-            let timeLeft = 10;
-            countEl.innerText = timeLeft;
-            textEl.innerText = timeLeft;
-            
+            let timeLeft = 5;
+countEl.innerText = timeLeft;
+textEl.innerText = timeLeft;
             const timer = setInterval(() => {
                 timeLeft--;
                 countEl.innerText = timeLeft;
@@ -1914,19 +1915,27 @@
             document.getElementById('btn-ad-step-3').style.cursor = 'not-allowed';
             document.getElementById('btn-ad-step-3').style.display = 'block';
 
-
-            document.getElementById('btn-ad-final').style.display = 'none';
+            const finalBtn = document.getElementById('btn-ad-final');
+            finalBtn.style.background = '#222';
+            finalBtn.style.color = '#666';
+            finalBtn.style.borderColor = '#444';
+            finalBtn.style.cursor = 'not-allowed';
+            finalBtn.style.pointerEvents = 'none';
+            finalBtn.innerHTML = '<i class="fa-solid fa-lock"></i> MEDIAFIRE BLOQUEADO';
+            
             document.getElementById('ad-unlock-status').innerText = '';
 
             modal.style.display = 'block';
+
+            
             overlay.classList.add('active');
         };
 
         window.executeAdStep = function(step) {
             const statusEl = document.getElementById('ad-unlock-status');
             
-            if (step === 1) {
-                window.open('https://omg10.com/4/10744381', '_blank');
+          if (step === 1) {
+window.open('https://www.effectivegatecpm.com/bju7faig6?key=d4c087ca3524b4bee6f6c8bd9e5c8d9e', '_blank');
                 const btn = document.getElementById('btn-ad-step-1');
                 btn.disabled = true;
                 btn.style.cursor = 'not-allowed';
@@ -1952,7 +1961,7 @@
                 }, 1000);
             } 
             else if (step === 2) {
-                window.open('https://omg10.com/4/10744381', '_blank');
+window.open('https://ukuleqasforsalesre.com?tid=1248841', '_blank');
                 const btn = document.getElementById('btn-ad-step-2');
                 btn.disabled = true;
                 btn.style.cursor = 'not-allowed';
@@ -1978,7 +1987,7 @@
                 }, 1000);
             }
             else if (step === 3) {
-                window.open('https://ukuleqasforsalesre.com?8GjaE=1248841', '_blank');
+window.open('https://omg10.com/4/10744381', '_blank');
                 const btn = document.getElementById('btn-ad-step-3');
                 btn.disabled = true;
                 btn.style.cursor = 'not-allowed';
@@ -1995,13 +2004,20 @@
                         btn.style.display = 'none';
                         statusEl.innerText = '';
                         
-                        const finalBtn = document.getElementById('btn-ad-final');
-                        finalBtn.style.display = 'block';
+                          const finalBtn = document.getElementById('btn-ad-final');
+                        finalBtn.style.background = '#0088ff';
+                        finalBtn.style.color = '#fff';
+                        finalBtn.style.borderColor = '#0088ff';
+                        finalBtn.style.cursor = 'pointer';
+                        finalBtn.style.pointerEvents = 'auto';
+                        finalBtn.innerHTML = '<i class="fa-solid fa-unlock"></i> IR A MEDIAFIRE';
                         finalBtn.href = window.currentAdFinalLink;
                         finalBtn.onclick = function() {
                             document.getElementById('ad-unlock-modal').style.display = 'none';
                             document.getElementById('dl-overlay').classList.remove('active');
                         };
+                     
+                        
                     }
                 }, 1000);
             }
