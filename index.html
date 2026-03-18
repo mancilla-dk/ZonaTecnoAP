@@ -591,6 +591,11 @@
         </div>
 
         <div id="home-view" class="view-section active">
+            <script>
+                if (window.location.search.includes('app=')) {
+                    document.getElementById('home-view').classList.remove('active');
+                }
+            </script>
 
             <div class='hero-content-visual'>
                 <h1>APPS PREMIUM</h1>
@@ -1294,23 +1299,26 @@
           
                         dls.forEach((d, i) => {
                 const a = document.createElement('a');
-                               const isDirect = (app.showAdModal === false && app.downloadType !== 'ads');
+                
+                // Fallback de compatibilidad con datos guardados anteriormente
+                let currentLinkType = d.dlType || (d.useAds === false ? 'direct' : (app.showAdModal === false ? 'direct' : app.downloadType || 'cuty'));
+                const isDirect = (currentLinkType === 'direct');
+                        
                 a.href = isDirect ? d.link : "#";
                 if(isDirect) a.target = "_blank";
                 a.innerText = d.name;
-                a.className = "download-button " + (i === 0 ? "option-1" : (i === 1 ? "option-2" : "option-3"));
-                                
+                a.className = "download-button " + (i % 2 === 0 ? "option-1" : "option-2");
+
                 if(!isDirect) {
                     a.onclick = (e) => { 
                         e.preventDefault(); 
-                        if (app.downloadType === 'ads') {
+                        if (currentLinkType === 'ads') {
                             window.startAdUnlockModal(d.link);
                         } else {
                             window.startDownloadTimer(d.link); 
                         }
                     };
                 }
-
 
                 dlContainer.appendChild(a);
             });
@@ -1552,10 +1560,15 @@
                 descShort: document.getElementById('app-desc-short').value,
 
                    descFull: document.getElementById('app-desc-full').value,
+                              
                 downloads: Array.from(document.getElementById('admin-downloads-container').children).map(div => {
-            
-                    return { name: div.querySelector('.dyn-dl-name').value, link: div.querySelector('.dyn-dl-link').value };
+                    return { 
+                        name: div.querySelector('.dyn-dl-name').value, 
+                        link: div.querySelector('.dyn-dl-link').value,
+                        dlType: div.querySelector('.dyn-dl-type') ? div.querySelector('.dyn-dl-type').value : 'cuty'
+                    };
                 }).filter(d => d.name.trim() !== "" && d.link.trim() !== ""),
+
                  oldVerActive: document.getElementById('app-ver-old-active').checked,
                 oldVersions: Array.from(document.getElementById('admin-old-versions-container').children).map(div => {
                     return { name: div.querySelector('.dyn-old-name').value, link: div.querySelector('.dyn-old-link').value };
@@ -1627,13 +1640,18 @@
             carArr.forEach(c => { if(c.trim() !== "") addCarouselInput(c.trim()); });
             if(document.getElementById('admin-carousel-container').children.length === 0) addCarouselInput();
             
-            document.getElementById('admin-downloads-container').innerHTML = "";
+                                    document.getElementById('admin-downloads-container').innerHTML = "";
             if(app.downloads && app.downloads.length > 0) {
-                app.downloads.forEach(d => addDownloadInput(d.name, d.link));
+                app.downloads.forEach(d => {
+                    let type = d.dlType || (d.useAds === false ? 'direct' : (app.downloadType || 'cuty'));
+                    addDownloadInput(d.name, d.link, type);
+                });
             } else {
-                if(app.linkRec) addDownloadInput(app.nameRec || 'DESCARGA RECOMENDABLE', app.linkRec);
-                if(app.linkAlt) addDownloadInput(app.nameAlt || 'DESCARGAR ALTERNATIVO', app.linkAlt);
+                let defaultType = app.downloadType || 'cuty';
+                if(app.linkRec) addDownloadInput(app.nameRec || 'DESCARGA RECOMENDABLE', app.linkRec, defaultType);
+                if(app.linkAlt) addDownloadInput(app.nameAlt || 'DESCARGAR ALTERNATIVO', app.linkAlt, 'direct');
             }
+
             if(document.getElementById('admin-downloads-container').children.length === 0) {
                 addDownloadInput('DESCARGA RECOMENDABLE', '');
             }
@@ -2038,18 +2056,23 @@ window.open('https://omg10.com/4/10744381', '_blank');
             `;
             container.appendChild(div);
         };
-
-        window.addDownloadInput = function(name = "", link = "") {
+        window.addDownloadInput = function(name = "", link = "", dlType = "cuty") {
             const container = document.getElementById('admin-downloads-container');
             const div = document.createElement('div');
-            div.style.display = "flex"; div.style.gap = "5px"; div.style.marginBottom = "5px";
+            div.style.display = "flex"; div.style.gap = "5px"; div.style.marginBottom = "5px"; div.style.alignItems = "center";
             div.innerHTML = `
-                <input type="text" class="dyn-dl-name" placeholder="Nombre Botón" value="${name}" style="width:40%; margin:0;">
-                <input type="text" class="dyn-dl-link" placeholder="Link (URL)" value="${link}" style="width:50%; margin:0;">
+                <select class="dyn-dl-type" style="width:25%; margin:0; padding:8px; background:#222; border:1px solid #444; color:#fff; border-radius:5px; font-size:11px; cursor:pointer;">
+                    <option value="cuty" ${dlType === 'cuty' ? 'selected' : ''}>Cuty (5s)</option>
+                    <option value="ads" ${dlType === 'ads' ? 'selected' : ''}>3 Pasos</option>
+                    <option value="direct" ${dlType === 'direct' ? 'selected' : ''}>Directo</option>
+                </select>
+                <input type="text" class="dyn-dl-name" placeholder="Nombre Botón" value="${name}" style="width:30%; margin:0;">
+                <input type="text" class="dyn-dl-link" placeholder="Link (URL)" value="${link}" style="width:35%; margin:0;">
                 <i class="fa-solid fa-trash" style="color:#ff3333; cursor:pointer; padding:10px; width:10%; text-align:center;" onclick="this.parentElement.remove()"></i>
             `;
             container.appendChild(div);
         };
+               
                 window.addOldVersionInput = function(name = "", link = "") {
             const container = document.getElementById('admin-old-versions-container');
             const div = document.createElement('div');
